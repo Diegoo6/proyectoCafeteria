@@ -1,0 +1,69 @@
+package com.example.autenticacion_service.service;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.autenticacion_service.dto.LoginRequest;
+import com.example.autenticacion_service.dto.LoginResponse;
+import com.example.autenticacion_service.dto.RegisterRequest;
+import com.example.autenticacion_service.dto.UsuarioResponse;
+import com.example.autenticacion_service.mapper.UsuarioMapper;
+import com.example.autenticacion_service.model.Rol;
+import com.example.autenticacion_service.model.TipoRol;
+import com.example.autenticacion_service.model.Usuario;
+import com.example.autenticacion_service.repository.RolRepository;
+import com.example.autenticacion_service.repository.UsuarioRepository;
+import com.example.autenticacion_service.security.JwtService;
+
+@Service
+public class AutenticacionService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final RolRepository rolRepository;
+    private final UsuarioMapper usuarioMapper;
+
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+
+    public AutenticacionService(UsuarioRepository usuarioRepository, RolRepository rolRepository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+        this.usuarioRepository = usuarioRepository;
+        this.rolRepository = rolRepository;
+        this.usuarioMapper = usuarioMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+    }
+
+    @Transactional
+    public UsuarioResponse registrarUsuario(RegisterRequest request) {
+        if (usuarioRepository.findByUsername(request.getUsername()).isPresent()) {  // Validar que el usuario no exista
+            throw new RuntimeException("El usuario ya existe");
+        }
+
+        Usuario usuarioNuevo = usuarioMapper.toEntity(request);
+        Rol rolOtorgado = rolRepository.findByNombre(TipoRol.EMPLEADO).orElseThrow(() -> new RuntimeException("Rol no encontrado")); // Guarda el rol que se quiere asignar
+
+        usuarioNuevo.setPassword(passwordEncoder.encode(usuarioNuevo.getPassword()));
+        usuarioNuevo.setRol(rolOtorgado);
+
+        Usuario usuarioGuardado = usuarioRepository.save(usuarioNuevo);
+
+        return usuarioMapper.toResponse(usuarioGuardado);
+
+    }
+
+    public LoginResponse usuarioLogin(LoginRequest request) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+        Usuario usuarioLogin = usuarioRepository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        String token = jwtService.generateToken(usuarioLogin.getUsername());
+
+        return new LoginResponse(token);
+    }
+    
+}
