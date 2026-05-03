@@ -25,7 +25,7 @@ public class DataInitializer {
 
     @Bean
     @Transactional
-    CommandLineRunner initData(RolRepository rolRepository) {
+    CommandLineRunner initData(RolRepository rolRepository) { // Inicializa datos al arrancar el sistema
         return args -> 
         {
             if (rolRepository.findByNombre(TipoRol.ADMIN).isEmpty()) {
