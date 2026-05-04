@@ -1,5 +1,7 @@
 package com.example.autenticacion_service.service;
 
+import java.util.List;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,6 +66,22 @@ public class AutenticacionService {
         String token = jwtService.generateToken(usuarioLogin.getUsername());
 
         return new LoginResponse(token);
+    }
+
+    @Transactional (readOnly = true)
+    public UsuarioResponse buscarPorId(Long id) {
+        Usuario usuarioEncontrado = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return usuarioMapper.toResponse(usuarioEncontrado);
+    }
+
+    @Transactional (readOnly = true)
+    public List<UsuarioResponse> listarUsuarios() {
+        List<Usuario> listaUsuarios = usuarioRepository.findAll();
+
+        return listaUsuarios.stream()
+                            .map(usuarioMapper::toResponse)
+                            .toList();
     }
     
 }

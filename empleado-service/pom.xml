@@ -52,6 +52,14 @@
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 
+						<!-- LA QUE ME FALTABA DE ORACLE -->
+		<dependency>
+			<groupId>com.oracle.database.security</groupId>
+			<artifactId>oraclepki</artifactId>
+			<version>23.3.0.23.09</version>
+		</dependency>
+				<!-- LA QUE ME FALTABA DE ORACLE  -->
+
 		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc11</artifactId>

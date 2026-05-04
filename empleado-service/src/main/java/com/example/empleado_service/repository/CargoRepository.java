@@ -8,6 +8,6 @@ import com.example.empleado_service.model.Cargo;
 import com.example.empleado_service.model.TipoCargo;
 
 public interface CargoRepository extends JpaRepository<Cargo, Long> {
-    Optional<Cargo> findByNombre(TipoCargo nombre);
+    Optional<Cargo> findByTipoCargo(TipoCargo tipoCargo);
     
 }

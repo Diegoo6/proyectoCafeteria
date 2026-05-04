@@ -1,5 +1,7 @@
 package com.example.autenticacion_service.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +18,8 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @Validated
@@ -40,5 +43,18 @@ public class AutenticacionController {
     public ResponseEntity<LoginResponse> usuarioLogin(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(autenticacionService.usuarioLogin(request));
     }
+    
+    @GetMapping("/usuarios/{id}")
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(autenticacionService.buscarPorId(id));
+    }
+
+    @GetMapping("/usuarios")
+    public ResponseEntity<List<UsuarioResponse>> listarUsuarios() {
+        List<UsuarioResponse> listaUsuarios = autenticacionService.listarUsuarios();
+
+        return ResponseEntity.ok(listaUsuarios);
+    }
+    
     
 }

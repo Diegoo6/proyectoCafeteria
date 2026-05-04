@@ -2,8 +2,6 @@ package com.example.empleado_service.dto;
 
 import java.time.LocalDate;
 
-import com.example.empleado_service.model.TipoCargo;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmpleadoRequest {
+public class EmpleadoModificar {
 
     @NotBlank (message = "Debe ingresar un nombre")
     @Size (max = 50)
@@ -29,18 +27,12 @@ public class EmpleadoRequest {
     @Size (max = 20)
     private String telefono;
 
-    @Email (message = "Ejemplo: nombre@algo.com")
     @NotBlank (message = "Debe ingresar correo")
+    @Email (message = "Ejemplo: nombre@algo.com ")
     @Size (max = 100)
     private String correo;
 
-    @NotNull (message = "Debe ingresar fecha")
+    @NotNull (message = "Debe ingresar fecha nacimiento")
     private LocalDate fechaNacimiento;
-
-    @NotNull (message = "Debe asignar un cargo")
-    private TipoCargo tipoCargo;
-
-    @NotNull (message = "Ingrese id de usuario")
-    private Long usuarioId;
     
 }

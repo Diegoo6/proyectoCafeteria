@@ -27,6 +27,6 @@ public class Cargo {
 
     @Enumerated (EnumType.STRING)
     @Column (nullable = false, unique = true)
-    private TipoCargo nombre;
+    private TipoCargo tipoCargo;
     
 }
