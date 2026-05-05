@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cafeteria.venta.model.Venta;
+import com.cafeteria.venta.dto.VentaRequest;
+import com.cafeteria.venta.dto.VentaResponse;
 import com.cafeteria.venta.service.VentaService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/ventas")
@@ -24,27 +27,29 @@ public class VentaController {
     public VentaController(VentaService ventaService){
         this.ventaService = ventaService;
     }
+    
 
     @GetMapping
-    public ResponseEntity<List<Venta>> listarVentas(){
+    public ResponseEntity<List<VentaResponse>> listarVentas(){
         return ResponseEntity.ok(ventaService.listarVentas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Venta> buscarPorId(@PathVariable Long id){
-        return ResponseEntity.ok(ventaService.encontrarPorId(id));
+    public ResponseEntity<VentaResponse> buscarPorId(@PathVariable Long id){
+        return ResponseEntity.ok(ventaService.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<Venta> guardarVenta(@RequestBody Venta venta){
-        return ResponseEntity.ok(ventaService.guardarVenta(venta));
-    }
+    public ResponseEntity<VentaResponse> guardarVenta(
+        @Valid
+        @RequestBody
+        VentaRequest request){
+            return ResponseEntity.ok(ventaService.guardarVenta(request));
+        }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPorId(@PathVariable Long id){
         ventaService.eliminarPorId(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

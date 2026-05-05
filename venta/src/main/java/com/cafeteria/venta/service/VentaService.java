@@ -4,6 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.cafeteria.venta.dto.VentaRequest;
+import com.cafeteria.venta.dto.VentaResponse;
+import com.cafeteria.venta.mapper.VentaMapper;
+import com.cafeteria.venta.model.DetalleVenta;
 import com.cafeteria.venta.model.Venta;
 import com.cafeteria.venta.repository.VentaRepository;
 
@@ -12,25 +16,52 @@ import com.cafeteria.venta.repository.VentaRepository;
 public class VentaService {
 
     private final VentaRepository ventaRepository;
+    private final VentaMapper ventaMapper;
 
-    public VentaService (VentaRepository ventaRepository) {
+    public VentaService(VentaRepository ventaRepository, VentaMapper ventaMapper){
         this.ventaRepository = ventaRepository;
+        this.ventaMapper = ventaMapper;
     }
 
-    public List <Venta> listarVentas(){                 //Devolver una lista con todas las ventas
-        return ventaRepository.findAll();    
+    public List<VentaResponse> listarVentas(){   //Listar todas las ventas
+        return ventaRepository.findAll()
+            .stream()
+            .map(ventaMapper::toResponse)
+            .toList();
     }
 
-    public Venta encontrarPorId (Long id){            //Buscar una venta por su Id
-        return ventaRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+    public VentaResponse buscarPorId(Long id){   //Para buscar venta por id
+        Venta venta = ventaRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Venta no encontrada"));
+
+        return ventaMapper.toResponse(venta);        
     }
 
-    public Venta guardarVenta (Venta venta){          //Para guardar una nueva venta
-        return ventaRepository.save(venta);
+    public VentaResponse guardarVenta(VentaRequest request){
+        
+        Venta venta = ventaMapper.toEntity(request);
+
+        double total = 0;
+
+        for(DetalleVenta detalle : venta.getDetalleVenta()){
+
+            double precio = 5000; //esto es momentaneo, solo para probar, despues tendre que llamar al microservicio producto
+            
+            detalle.setPrecioUnitario(precio);
+            detalle.setSubtotal(precio * detalle.getCantidad());
+
+            total += detalle.getSubtotal();
+
+        }
+
+        venta.setTotal(total);
+
+        Venta ventaGuardada = ventaRepository.save(venta);
+
+        return ventaMapper.toResponse(ventaGuardada);
     }
 
-    public void eliminarPorId (Long id){            //Para eliminar una venta por su id
+    public void eliminarPorId(Long id){
         ventaRepository.deleteById(id);
     }
 
