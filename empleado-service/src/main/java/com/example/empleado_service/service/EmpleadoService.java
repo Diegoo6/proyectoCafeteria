@@ -32,8 +32,8 @@ public class EmpleadoService {
     }
 
     @Transactional
-    public EmpleadoResponse agregarEmpleado(EmpleadoRequest request) {
-        authClient.buscarUsuarioPorId(request.getUsuarioId());
+    public EmpleadoResponse agregarEmpleado(EmpleadoRequest request, String authorizationHeader) {
+        authClient.buscarUsuarioPorId(request.getUsuarioId(), authorizationHeader);
 
         Empleado nuevoEmpleado = empleadoMapper.toEntity(request);
         Cargo cargoAsignado = cargoRepository.findByTipoCargo(request.getTipoCargo()).orElseThrow(() -> new RuntimeException("Cargo inválido"));

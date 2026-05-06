@@ -29,7 +29,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/autenticacion/registrar").permitAll()
                 .requestMatchers("/api/v1/autenticacion/login").permitAll()
-                .requestMatchers("/api/v1/autenticacion/internal/validar-token").permitAll()
 
                 .requestMatchers("/api/v1/autenticacion/usuarios/**").hasRole("ADMIN")
 

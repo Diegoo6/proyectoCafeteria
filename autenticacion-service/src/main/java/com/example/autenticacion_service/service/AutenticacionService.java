@@ -12,7 +12,6 @@ import com.example.autenticacion_service.dto.LoginRequest;
 import com.example.autenticacion_service.dto.LoginResponse;
 import com.example.autenticacion_service.dto.NuevoRolRequest;
 import com.example.autenticacion_service.dto.RegisterRequest;
-import com.example.autenticacion_service.dto.TokenValidationResponse;
 import com.example.autenticacion_service.dto.UsuarioResponse;
 import com.example.autenticacion_service.mapper.UsuarioMapper;
 import com.example.autenticacion_service.model.Rol;
@@ -65,7 +64,7 @@ public class AutenticacionService {
 
         Usuario usuarioLogin = usuarioRepository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        String token = jwtService.generateToken(usuarioLogin.getUsername());
+        String token = jwtService.generateToken(usuarioLogin.getUsername(), usuarioLogin.getRol().getNombre().name());
 
         return new LoginResponse(token);
     }
@@ -113,25 +112,6 @@ public class AutenticacionService {
         Usuario aEliminar = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         usuarioRepository.delete(aEliminar);
-    }
-
-    public TokenValidationResponse validarToken(String autHeader) {
-        if (autHeader == null || !autHeader.startsWith("Bearer ")) {
-            return new TokenValidationResponse(false, null, null);
-        }
-
-        String token = autHeader.substring(7);
-        String username = jwtService.extractUsername(token);
-
-        Usuario usuario = usuarioRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("El usuario no existe"));
-
-        boolean tokenValido = jwtService.isTokenValid(token, usuario.getUsername());
-
-        if (!tokenValido) {
-            return new TokenValidationResponse(false, null, null);
-        }
-
-        return new TokenValidationResponse(true, usuario.getUsername(), usuario.getRol().getNombre());
     }
     
 }

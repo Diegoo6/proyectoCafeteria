@@ -9,9 +9,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.empleado_service.client.AuthClient;
-import com.example.empleado_service.dto.TokenValidationResponse;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,10 +17,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final AuthClient authClient;
+    private final JwtService jwtService;
 
-    public JwtAuthenticationFilter(AuthClient authClient) {
-        this.authClient = authClient;
+    public JwtAuthenticationFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -36,23 +33,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        TokenValidationResponse tokenResponse = authClient.validarToken(authHeader);
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+        String rol = jwtService.extractRol(token);
 
-        if (tokenResponse == null || !tokenResponse.isValid()) {
-            filterChain.doFilter(request, response);
-            return;
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            if (jwtService.isTokenValid(token)) {
+
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + rol);
+
+                UsernamePasswordAuthenticationToken autenticado = new UsernamePasswordAuthenticationToken(username, null, List.of(authority));
+
+                SecurityContextHolder.getContext().setAuthentication(autenticado);
+                
+            }
         }
-
-        String username = tokenResponse.getUsername();
-        String rol = tokenResponse.getTipoRol().name();
-
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + rol);
-
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, List.of(authority));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
-    
 }

@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,8 +40,8 @@ public class EmpleadoController {
     }
 
     @PostMapping
-    public ResponseEntity<EmpleadoResponse> agregarEmpleado(@Valid @RequestBody EmpleadoRequest request) {
-        EmpleadoResponse empleadoNuevo = empleadoService.agregarEmpleado(request);
+    public ResponseEntity<EmpleadoResponse> agregarEmpleado(@Valid @RequestBody EmpleadoRequest request, @RequestHeader("Authorization") String authorizationHeader) {
+        EmpleadoResponse empleadoNuevo = empleadoService.agregarEmpleado(request, authorizationHeader);
         
         URI location = URI.create("/api/v1/empleados/" + empleadoNuevo.getId());
         return ResponseEntity.created(location).body(empleadoNuevo);
