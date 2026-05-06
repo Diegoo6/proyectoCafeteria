@@ -13,6 +13,7 @@ import com.example.autenticacion_service.dto.LoginRequest;
 import com.example.autenticacion_service.dto.LoginResponse;
 import com.example.autenticacion_service.dto.NuevoRolRequest;
 import com.example.autenticacion_service.dto.RegisterRequest;
+import com.example.autenticacion_service.dto.TokenValidationResponse;
 import com.example.autenticacion_service.dto.UsuarioResponse;
 import com.example.autenticacion_service.model.TipoRol;
 import com.example.autenticacion_service.service.AutenticacionService;
@@ -21,6 +22,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,5 +86,13 @@ public class AutenticacionController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/internal/validar-token")
+    public ResponseEntity<TokenValidationResponse> validarToken(@RequestHeader("Authorization") String authHeader) {
+        TokenValidationResponse response = autenticacionService.validarToken(authHeader);
+        
+        return ResponseEntity.ok(response);
+    }
+    
     
 }

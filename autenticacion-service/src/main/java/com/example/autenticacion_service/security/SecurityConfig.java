@@ -26,7 +26,16 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/autenticacion/registrar").permitAll()
+                .requestMatchers("/api/v1/autenticacion/login").permitAll()
+                .requestMatchers("/api/v1/autenticacion/internal/validar-token").permitAll()
+
+                .requestMatchers("/api/v1/autenticacion/usuarios/**").hasRole("ADMIN")
+
+                .anyRequest().authenticated()
+                )
+
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
