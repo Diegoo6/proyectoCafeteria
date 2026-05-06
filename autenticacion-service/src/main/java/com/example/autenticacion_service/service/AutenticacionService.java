@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.autenticacion_service.dto.LoginRequest;
 import com.example.autenticacion_service.dto.LoginResponse;
+import com.example.autenticacion_service.dto.NuevoRolRequest;
 import com.example.autenticacion_service.dto.RegisterRequest;
 import com.example.autenticacion_service.dto.UsuarioResponse;
 import com.example.autenticacion_service.mapper.UsuarioMapper;
@@ -82,6 +83,35 @@ public class AutenticacionService {
         return listaUsuarios.stream()
                             .map(usuarioMapper::toResponse)
                             .toList();
+    }
+
+    @Transactional (readOnly = true)
+    public List<UsuarioResponse> listarPorRol(TipoRol rol) {
+        List<Usuario> listaRol = usuarioRepository.findByRolNombre(rol);
+
+        return listaRol.stream()
+                .map(usuarioMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional
+    public UsuarioResponse cambiarRol(Long id, NuevoRolRequest request) {
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Rol nuevoRol = rolRepository.findByNombre(request.getNuevoRol()).orElseThrow(() -> new RuntimeException("Rol inválido"));
+
+        usuario.setRol(nuevoRol);
+
+        Usuario usuarioActualizado = usuarioRepository.save(usuario);
+
+        return usuarioMapper.toResponse(usuarioActualizado);
+    }
+
+    @Transactional
+    public void eliminarPorId(Long id) {
+        Usuario aEliminar = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuarioRepository.delete(aEliminar);
     }
     
 }

@@ -6,20 +6,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.autenticacion_service.dto.LoginRequest;
 import com.example.autenticacion_service.dto.LoginResponse;
+import com.example.autenticacion_service.dto.NuevoRolRequest;
 import com.example.autenticacion_service.dto.RegisterRequest;
 import com.example.autenticacion_service.dto.UsuarioResponse;
+import com.example.autenticacion_service.model.TipoRol;
 import com.example.autenticacion_service.service.AutenticacionService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+
+
 
 @RestController
 @Validated
@@ -55,6 +62,27 @@ public class AutenticacionController {
 
         return ResponseEntity.ok(listaUsuarios);
     }
+
+    @GetMapping("/usuarios/rol")
+    public ResponseEntity<List<UsuarioResponse>> filtrarPorRol(@RequestParam TipoRol rol) {
+        List<UsuarioResponse> listaRol = autenticacionService.listarPorRol(rol);
+
+        return ResponseEntity.ok(listaRol);
+    }
     
+    
+    @PutMapping("/usuarios/{id}/cambiar-rol")
+    public ResponseEntity<UsuarioResponse> cambiarRol(@PathVariable Long id,@Valid @RequestBody NuevoRolRequest request) {
+        UsuarioResponse usuario = autenticacionService.cambiarRol(id, request);
+        
+        return ResponseEntity.ok(usuario);
+    }
+
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<Void> eliminarPorId(@PathVariable Long id) {
+        autenticacionService.eliminarPorId(id);
+
+        return ResponseEntity.noContent().build();
+    }
     
 }
