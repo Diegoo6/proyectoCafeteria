@@ -48,7 +48,7 @@ public class AutenticacionService {
         }
 
         Usuario usuarioNuevo = usuarioMapper.toEntity(request);
-        Rol rolOtorgado = rolRepository.findByNombre(TipoRol.EMPLEADO).orElseThrow(() -> new RuntimeException("Rol no encontrado")); // Guarda el rol que se quiere asignar
+        Rol rolOtorgado = rolRepository.findByNombre(TipoRol.EMPLEADO).orElseThrow(() -> new RuntimeException("Error interno: Rol EMPLEADO no configurado en la base de datos")); // Guarda el rol que se quiere asignar
 
         usuarioNuevo.setPassword(passwordEncoder.encode(usuarioNuevo.getPassword()));
         usuarioNuevo.setRol(rolOtorgado);
