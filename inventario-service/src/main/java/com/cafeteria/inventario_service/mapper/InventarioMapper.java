@@ -6,7 +6,7 @@ import com.cafeteria.inventario_service.model.Inventario;
 
 public class InventarioMapper {
 
-    // 🔄 DTO Request → Entity
+   
     public static Inventario toEntity(InventarioRequestDTO dto) {
 
         Inventario inventario = new Inventario();
@@ -18,7 +18,7 @@ public class InventarioMapper {
         return inventario;
     }
 
-    // 🔄 Entity → DTO Response
+   
     public static InventarioResponseDTO toResponse(Inventario inventario) {
 
         InventarioResponseDTO dto = new InventarioResponseDTO();

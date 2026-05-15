@@ -11,7 +11,7 @@ import producto_service.service.ProductoService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/productos")
+@RequestMapping("api/v1/productos")
 @RequiredArgsConstructor
 public class ProductoController {
 

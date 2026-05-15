@@ -8,7 +8,7 @@ import java.util.List;
 public interface MovimientoInventarioRepository
         extends JpaRepository<MovimientoInventario, Long> {
 
-    // 🔎 Listar movimientos por inventario
+   
     List<MovimientoInventario>
     findByInventarioId(Long inventarioId);
 }

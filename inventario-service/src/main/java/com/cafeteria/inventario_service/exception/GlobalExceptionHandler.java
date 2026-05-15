@@ -11,7 +11,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 🔴 Recurso no encontrado
+    
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, Object> handleNotFound(
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
         return error;
     }
 
-    // 🟠 Reglas de negocio
+    
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleBusiness(
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
         return error;
     }
 
-    // 🟡 Validaciones DTO
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidation(
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
         return errors;
     }
 
-    // 🔥 Error general
+  
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, Object> handleGeneral(Exception ex) {

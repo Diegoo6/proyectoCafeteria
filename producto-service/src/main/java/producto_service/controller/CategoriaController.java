@@ -11,7 +11,7 @@ import producto_service.service.CategoriaService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categorias")
+@RequestMapping("api/v1/categorias")
 @RequiredArgsConstructor
 public class CategoriaController {
 

@@ -29,28 +29,28 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // 📄 GET → ADMIN y EMPLEADO
+                        
                         .requestMatchers(HttpMethod.GET, "/productos/**")
                         .hasAnyRole("ADMIN", "EMPLEADO")
 
                         .requestMatchers(HttpMethod.GET, "/categorias/**")
                         .hasAnyRole("ADMIN", "EMPLEADO")
 
-                        // 💾 POST → solo ADMIN
+                        
                         .requestMatchers(HttpMethod.POST, "/productos/**")
                         .hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/categorias/**")
                         .hasRole("ADMIN")
 
-                        // ✏️ PUT → solo ADMIN
+                        
                         .requestMatchers(HttpMethod.PUT, "/productos/**")
                         .hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.PUT, "/categorias/**")
                         .hasRole("ADMIN")
 
-                        // 🗑️ DELETE → solo ADMIN
+                        
                         .requestMatchers(HttpMethod.DELETE, "/productos/**")
                         .hasRole("ADMIN")
 

@@ -17,138 +17,106 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InventarioService {
 
-    private final InventarioRepository inventarioRepository;
+        private final InventarioRepository inventarioRepository;
 
-    // 🔥 FEIGN CLIENT
-    private final ProductoClient productoClient;
+        private final ProductoClient productoClient;
 
-    // 📄 LISTAR TODOS
-    public List<InventarioResponseDTO> listar() {
+        public List<InventarioResponseDTO> listar() {
 
-        return inventarioRepository.findAll()
-                .stream()
-                .map(InventarioMapper::toResponse)
-                .toList();
-    }
-
-    // 🔍 OBTENER POR ID
-    public InventarioResponseDTO obtenerPorId(Long id) {
-
-        Inventario inventario = inventarioRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Inventario no encontrado"
-                        ));
-
-        return InventarioMapper.toResponse(inventario);
-    }
-
-    // 💾 CREAR INVENTARIO
-    public InventarioResponseDTO guardar(
-            InventarioRequestDTO dto) {
-
-        // 🔥 VALIDAR SI EL PRODUCTO EXISTE
-        try {
-
-            productoClient.obtenerProducto(
-                    dto.getProductoId()
-            );
-
-        } catch (Exception e) {
-
-            throw new BusinessException(
-                    "El producto no existe"
-            );
+                return inventarioRepository.findAll()
+                                .stream()
+                                .map(InventarioMapper::toResponse)
+                                .toList();
         }
 
-        // 🔥 EVITAR DUPLICADOS
-        if (inventarioRepository
-                .existsByProductoId(dto.getProductoId())) {
+        public InventarioResponseDTO obtenerPorId(Long id) {
 
-            throw new BusinessException(
-                    "Ya existe inventario para este producto"
-            );
+                Inventario inventario = inventarioRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Inventario no encontrado"));
+
+                return InventarioMapper.toResponse(inventario);
         }
 
-        Inventario inventario =
-                InventarioMapper.toEntity(dto);
+        public InventarioResponseDTO guardar(
+                        InventarioRequestDTO dto) {
 
-        // 🔥 DISPONIBILIDAD AUTOMÁTICA
-        inventario.setDisponible(
-                inventario.getStock() > 0
-        );
+                try {
 
-        Inventario guardado =
-                inventarioRepository.save(inventario);
+                        productoClient.obtenerProducto(
+                                        dto.getProductoId());
 
-        return InventarioMapper.toResponse(guardado);
-    }
+                } catch (Exception e) {
 
-    // ✏️ ACTUALIZAR
-    public InventarioResponseDTO actualizar(
-            Long id,
-            InventarioRequestDTO dto) {
+                        throw new BusinessException(
+                                        "El producto no existe");
+                }
 
-        Inventario inventario =
-                inventarioRepository.findById(id)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Inventario no encontrado"
-                                ));
+                if (inventarioRepository
+                                .existsByProductoId(dto.getProductoId())) {
 
-        // 🔥 VALIDAR PRODUCTO
-        try {
+                        throw new BusinessException(
+                                        "Ya existe inventario para este producto");
+                }
 
-            productoClient.obtenerProducto(
-                    dto.getProductoId()
-            );
+                Inventario inventario = InventarioMapper.toEntity(dto);
 
-        } catch (Exception e) {
+                inventario.setDisponible(
+                                inventario.getStock() > 0);
 
-            throw new BusinessException(
-                    "El producto no existe"
-            );
+                Inventario guardado = inventarioRepository.save(inventario);
+
+                return InventarioMapper.toResponse(guardado);
         }
 
-        inventario.setProductoId(dto.getProductoId());
-        inventario.setStock(dto.getStock());
+        public InventarioResponseDTO actualizar(
+                        Long id,
+                        InventarioRequestDTO dto) {
 
-        // 🔥 DISPONIBILIDAD AUTOMÁTICA
-        inventario.setDisponible(
-                dto.getStock() > 0
-        );
+                Inventario inventario = inventarioRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Inventario no encontrado"));
 
-        Inventario actualizado =
-                inventarioRepository.save(inventario);
+                try {
 
-        return InventarioMapper.toResponse(actualizado);
-    }
+                        productoClient.obtenerProducto(
+                                        dto.getProductoId());
 
-    // 🗑️ ELIMINAR
-    public void eliminar(Long id) {
+                } catch (Exception e) {
 
-        if (!inventarioRepository.existsById(id)) {
+                        throw new BusinessException(
+                                        "El producto no existe");
+                }
 
-            throw new ResourceNotFoundException(
-                    "Inventario no encontrado"
-            );
+                inventario.setProductoId(dto.getProductoId());
+                inventario.setStock(dto.getStock());
+
+                inventario.setDisponible(
+                                dto.getStock() > 0);
+
+                Inventario actualizado = inventarioRepository.save(inventario);
+
+                return InventarioMapper.toResponse(actualizado);
         }
 
-        inventarioRepository.deleteById(id);
-    }
+        public void eliminar(Long id) {
 
-    // 🔎 BUSCAR POR PRODUCTO
-    public InventarioResponseDTO
-    buscarPorProductoId(Long productoId) {
+                if (!inventarioRepository.existsById(id)) {
 
-        Inventario inventario =
-                inventarioRepository
-                        .findByProductoId(productoId)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Inventario no encontrado"
-                                ));
+                        throw new ResourceNotFoundException(
+                                        "Inventario no encontrado");
+                }
 
-        return InventarioMapper.toResponse(inventario);
-    }
+                inventarioRepository.deleteById(id);
+        }
+
+        public InventarioResponseDTO buscarPorProductoId(Long productoId) {
+
+                Inventario inventario = inventarioRepository
+                                .findByProductoId(productoId)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Inventario no encontrado"));
+
+                return InventarioMapper.toResponse(inventario);
+        }
 }

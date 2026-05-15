@@ -8,9 +8,9 @@ import java.util.Optional;
 public interface InventarioRepository
         extends JpaRepository<Inventario, Long> {
 
-    // 🔎 Buscar inventario por productoId
+  
     Optional<Inventario> findByProductoId(Long productoId);
 
-    // 🔥 Validar si ya existe inventario para un producto
+   
     boolean existsByProductoId(Long productoId);
 }

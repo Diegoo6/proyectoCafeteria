@@ -21,7 +21,7 @@ public class MovimientoInventarioService {
     private final MovimientoInventarioRepository movimientoRepository;
     private final InventarioRepository inventarioRepository;
 
-    // 📄 LISTAR MOVIMIENTOS
+    
     public List<MovimientoInventarioResponseDTO> listar() {
 
         return movimientoRepository.findAll()
@@ -30,7 +30,7 @@ public class MovimientoInventarioService {
                 .toList();
     }
 
-    // 🔍 OBTENER MOVIMIENTO POR ID
+   
     public MovimientoInventarioResponseDTO obtenerPorId(Long id) {
 
         MovimientoInventario movimiento =
@@ -43,11 +43,11 @@ public class MovimientoInventarioService {
         return MovimientoInventarioMapper.toResponse(movimiento);
     }
 
-    // 💾 REGISTRAR MOVIMIENTO
+    
     public MovimientoInventarioResponseDTO guardar(
             MovimientoInventarioRequestDTO dto) {
 
-        // 🔎 buscar inventario
+        
         Inventario inventario =
                 inventarioRepository.findById(dto.getInventarioId())
                         .orElseThrow(() ->
@@ -55,7 +55,7 @@ public class MovimientoInventarioService {
                                         "Inventario no encontrado"
                                 ));
 
-        // 🔥 VALIDAR TIPO
+        
         if (!dto.getTipo().equalsIgnoreCase("ENTRADA")
                 && !dto.getTipo().equalsIgnoreCase("SALIDA")) {
 
@@ -64,7 +64,7 @@ public class MovimientoInventarioService {
             );
         }
 
-        // 🔥 ENTRADA DE STOCK
+      
         if (dto.getTipo().equalsIgnoreCase("ENTRADA")) {
 
             inventario.setStock(
@@ -72,10 +72,10 @@ public class MovimientoInventarioService {
             );
         }
 
-        // 🔥 SALIDA DE STOCK
+       
         if (dto.getTipo().equalsIgnoreCase("SALIDA")) {
 
-            // ❌ evitar stock negativo
+           
             if (inventario.getStock() < dto.getCantidad()) {
 
                 throw new BusinessException(
@@ -88,15 +88,15 @@ public class MovimientoInventarioService {
             );
         }
 
-        // 🔥 actualizar disponibilidad
+        
         inventario.setDisponible(
                 inventario.getStock() > 0
         );
 
-        // 💾 guardar inventario actualizado
+        
         inventarioRepository.save(inventario);
 
-        // 💾 guardar movimiento
+       
         MovimientoInventario movimiento =
                 MovimientoInventarioMapper.toEntity(
                         dto,
@@ -109,7 +109,7 @@ public class MovimientoInventarioService {
         return MovimientoInventarioMapper.toResponse(guardado);
     }
 
-    // 🗑️ ELIMINAR MOVIMIENTO
+    
     public void eliminar(Long id) {
 
         if (!movimientoRepository.existsById(id)) {
@@ -122,7 +122,7 @@ public class MovimientoInventarioService {
         movimientoRepository.deleteById(id);
     }
 
-    // 🔎 LISTAR MOVIMIENTOS POR INVENTARIO
+    
     public List<MovimientoInventarioResponseDTO>
     listarPorInventario(Long inventarioId) {
 

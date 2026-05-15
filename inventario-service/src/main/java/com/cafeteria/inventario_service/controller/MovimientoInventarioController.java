@@ -11,20 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/movimientos")
+@RequestMapping("api/v1/movimientos")
 @RequiredArgsConstructor
 public class MovimientoInventarioController {
 
     private final MovimientoInventarioService movimientoService;
 
-    // 📄 LISTAR TODOS
+  
     @GetMapping
     public List<MovimientoInventarioResponseDTO> listar() {
 
         return movimientoService.listar();
     }
 
-    // 🔍 OBTENER POR ID
+   
     @GetMapping("/{id}")
     public MovimientoInventarioResponseDTO obtener(
             @PathVariable Long id) {
@@ -32,7 +32,7 @@ public class MovimientoInventarioController {
         return movimientoService.obtenerPorId(id);
     }
 
-    // 💾 REGISTRAR MOVIMIENTO
+  
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MovimientoInventarioResponseDTO crear(
@@ -42,7 +42,7 @@ public class MovimientoInventarioController {
         return movimientoService.guardar(dto);
     }
 
-    // 🗑️ ELIMINAR MOVIMIENTO
+    
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(
@@ -51,7 +51,7 @@ public class MovimientoInventarioController {
         movimientoService.eliminar(id);
     }
 
-    // 🔎 LISTAR MOVIMIENTOS POR INVENTARIO
+    
     @GetMapping("/inventario/{inventarioId}")
     public List<MovimientoInventarioResponseDTO>
     listarPorInventario(

@@ -11,20 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/inventarios")
+@RequestMapping("api/v1/inventarios")
 @RequiredArgsConstructor
 public class InventarioController {
 
     private final InventarioService inventarioService;
 
-    // 📄 LISTAR TODOS
+    
     @GetMapping
     public List<InventarioResponseDTO> listar() {
 
         return inventarioService.listar();
     }
 
-    // 🔍 OBTENER POR ID
+    
     @GetMapping("/{id}")
     public InventarioResponseDTO obtener(
             @PathVariable Long id) {
@@ -32,7 +32,7 @@ public class InventarioController {
         return inventarioService.obtenerPorId(id);
     }
 
-    // 💾 CREAR INVENTARIO
+    
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public InventarioResponseDTO crear(
@@ -41,7 +41,7 @@ public class InventarioController {
         return inventarioService.guardar(dto);
     }
 
-    // ✏️ ACTUALIZAR INVENTARIO
+    
     @PutMapping("/{id}")
     public InventarioResponseDTO actualizar(
             @PathVariable Long id,
@@ -50,7 +50,7 @@ public class InventarioController {
         return inventarioService.actualizar(id, dto);
     }
 
-    // 🗑️ ELIMINAR INVENTARIO
+   
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(
@@ -59,7 +59,7 @@ public class InventarioController {
         inventarioService.eliminar(id);
     }
 
-    // 🔎 BUSCAR POR productoId
+    
     @GetMapping("/producto/{productoId}")
     public InventarioResponseDTO buscarPorProductoId(
             @PathVariable Long productoId) {
