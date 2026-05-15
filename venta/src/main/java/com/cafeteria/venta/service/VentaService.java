@@ -1,5 +1,9 @@
 package com.cafeteria.venta.service;
 
+<<<<<<< HEAD
+=======
+import java.time.LocalDate;
+>>>>>>> master
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -50,12 +54,23 @@ public class VentaService {
             detalle.setPrecioUnitario(precio);
             detalle.setSubtotal(precio * detalle.getCantidad());
 
+<<<<<<< HEAD
+=======
+            detalle.setVenta(venta);
+
+>>>>>>> master
             total += detalle.getSubtotal();
 
         }
 
         venta.setTotal(total);
 
+<<<<<<< HEAD
+=======
+        venta.setFechaVenta(LocalDate.now());
+
+
+>>>>>>> master
         Venta ventaGuardada = ventaRepository.save(venta);
 
         return ventaMapper.toResponse(ventaGuardada);

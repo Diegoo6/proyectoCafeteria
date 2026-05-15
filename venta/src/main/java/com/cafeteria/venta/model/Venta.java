@@ -3,6 +3,10 @@ package com.cafeteria.venta.model;
 import java.time.LocalDate;
 import java.util.List;
 
+<<<<<<< HEAD
+=======
+import jakarta.persistence.CascadeType;
+>>>>>>> master
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,7 +50,11 @@ public class Venta {
     @Column(name= "empleado_id", nullable= false)
     private Long empleadoId;
 
+<<<<<<< HEAD
     @OneToMany(mappedBy= "venta")
+=======
+    @OneToMany(mappedBy= "venta", cascade = CascadeType.ALL)
+>>>>>>> master
     private List<DetalleVenta> detalleVenta;
 
 }
