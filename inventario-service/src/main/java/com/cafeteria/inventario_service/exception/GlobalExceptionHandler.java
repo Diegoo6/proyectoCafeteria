@@ -14,8 +14,7 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleNotFound(
-            ResourceNotFoundException ex) {
+    public Map<String, Object> handleNotFound(ResourceNotFoundException ex) {
 
         Map<String, Object> error = new HashMap<>();
 
@@ -29,8 +28,7 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleBusiness(
-            BusinessException ex) {
+    public Map<String, Object> handleBusiness(BusinessException ex) {
 
         Map<String, Object> error = new HashMap<>();
 
@@ -44,8 +42,7 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidation(
-            MethodArgumentNotValidException ex) {
+    public Map<String, String> handleValidation(MethodArgumentNotValidException ex) {
 
         Map<String, String> errors = new HashMap<>();
 

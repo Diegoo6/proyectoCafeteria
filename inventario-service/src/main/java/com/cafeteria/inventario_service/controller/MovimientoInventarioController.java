@@ -26,8 +26,7 @@ public class MovimientoInventarioController {
 
    
     @GetMapping("/{id}")
-    public MovimientoInventarioResponseDTO obtener(
-            @PathVariable Long id) {
+    public MovimientoInventarioResponseDTO obtener(@PathVariable Long id) {
 
         return movimientoService.obtenerPorId(id);
     }
@@ -35,9 +34,7 @@ public class MovimientoInventarioController {
   
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MovimientoInventarioResponseDTO crear(
-            @Valid @RequestBody
-            MovimientoInventarioRequestDTO dto) {
+    public MovimientoInventarioResponseDTO crear(@Valid @RequestBody MovimientoInventarioRequestDTO dto) {
 
         return movimientoService.guardar(dto);
     }
@@ -45,8 +42,7 @@ public class MovimientoInventarioController {
     
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminar(
-            @PathVariable Long id) {
+    public void eliminar(@PathVariable Long id) {
 
         movimientoService.eliminar(id);
     }
@@ -54,8 +50,7 @@ public class MovimientoInventarioController {
     
     @GetMapping("/inventario/{inventarioId}")
     public List<MovimientoInventarioResponseDTO>
-    listarPorInventario(
-            @PathVariable Long inventarioId) {
+    listarPorInventario(@PathVariable Long inventarioId) {
 
         return movimientoService
                 .listarPorInventario(inventarioId);

@@ -32,14 +32,12 @@ public class InventarioService {
         public InventarioResponseDTO obtenerPorId(Long id) {
 
                 Inventario inventario = inventarioRepository.findById(id)
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                "Inventario no encontrado"));
+                                .orElseThrow(() -> new ResourceNotFoundException("Inventario no encontrado"));
 
                 return InventarioMapper.toResponse(inventario);
         }
 
-        public InventarioResponseDTO guardar(
-                        InventarioRequestDTO dto) {
+        public InventarioResponseDTO guardar(InventarioRequestDTO dto) {
 
                 try {
 
@@ -48,51 +46,41 @@ public class InventarioService {
 
                 } catch (Exception e) {
 
-                        throw new BusinessException(
-                                        "El producto no existe");
+                        throw new BusinessException("El producto no existe");
                 }
 
-                if (inventarioRepository
-                                .existsByProductoId(dto.getProductoId())) {
+                if (inventarioRepository.existsByProductoId(dto.getProductoId())) {
 
-                        throw new BusinessException(
-                                        "Ya existe inventario para este producto");
+                        throw new BusinessException("Ya existe inventario para este producto");
                 }
 
                 Inventario inventario = InventarioMapper.toEntity(dto);
 
-                inventario.setDisponible(
-                                inventario.getStock() > 0);
+                inventario.setDisponible(inventario.getStock() > 0);
 
                 Inventario guardado = inventarioRepository.save(inventario);
 
                 return InventarioMapper.toResponse(guardado);
         }
 
-        public InventarioResponseDTO actualizar(
-                        Long id,
-                        InventarioRequestDTO dto) {
+        public InventarioResponseDTO actualizar(Long id,InventarioRequestDTO dto) {
 
                 Inventario inventario = inventarioRepository.findById(id)
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                "Inventario no encontrado"));
+                                .orElseThrow(() -> new ResourceNotFoundException("Inventario no encontrado"));
 
                 try {
 
-                        productoClient.obtenerProducto(
-                                        dto.getProductoId());
+                        productoClient.obtenerProducto(dto.getProductoId());
 
                 } catch (Exception e) {
 
-                        throw new BusinessException(
-                                        "El producto no existe");
+                        throw new BusinessException("El producto no existe");
                 }
 
                 inventario.setProductoId(dto.getProductoId());
                 inventario.setStock(dto.getStock());
 
-                inventario.setDisponible(
-                                dto.getStock() > 0);
+                inventario.setDisponible(dto.getStock() > 0);
 
                 Inventario actualizado = inventarioRepository.save(inventario);
 
@@ -103,8 +91,7 @@ public class InventarioService {
 
                 if (!inventarioRepository.existsById(id)) {
 
-                        throw new ResourceNotFoundException(
-                                        "Inventario no encontrado");
+                        throw new ResourceNotFoundException("Inventario no encontrado");
                 }
 
                 inventarioRepository.deleteById(id);
@@ -114,8 +101,7 @@ public class InventarioService {
 
                 Inventario inventario = inventarioRepository
                                 .findByProductoId(productoId)
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                "Inventario no encontrado"));
+                                .orElseThrow(() -> new ResourceNotFoundException("Inventario no encontrado"));
 
                 return InventarioMapper.toResponse(inventario);
         }

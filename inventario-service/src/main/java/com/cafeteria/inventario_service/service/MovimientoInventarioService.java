@@ -35,33 +35,24 @@ public class MovimientoInventarioService {
 
         MovimientoInventario movimiento =
                 movimientoRepository.findById(id)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Movimiento no encontrado"
-                                ));
+                        .orElseThrow(() ->new ResourceNotFoundException("Movimiento no encontrado"));
 
         return MovimientoInventarioMapper.toResponse(movimiento);
     }
 
     
-    public MovimientoInventarioResponseDTO guardar(
-            MovimientoInventarioRequestDTO dto) {
+    public MovimientoInventarioResponseDTO guardar(MovimientoInventarioRequestDTO dto) {
 
         
         Inventario inventario =
                 inventarioRepository.findById(dto.getInventarioId())
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Inventario no encontrado"
-                                ));
+                        .orElseThrow(() ->new ResourceNotFoundException("Inventario no encontrado"));
 
         
         if (!dto.getTipo().equalsIgnoreCase("ENTRADA")
                 && !dto.getTipo().equalsIgnoreCase("SALIDA")) {
 
-            throw new BusinessException(
-                    "El tipo debe ser ENTRADA o SALIDA"
-            );
+            throw new BusinessException("El tipo debe ser ENTRADA o SALIDA");
         }
 
       

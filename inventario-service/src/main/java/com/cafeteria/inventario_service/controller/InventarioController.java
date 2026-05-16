@@ -26,8 +26,7 @@ public class InventarioController {
 
     
     @GetMapping("/{id}")
-    public InventarioResponseDTO obtener(
-            @PathVariable Long id) {
+    public InventarioResponseDTO obtener(@PathVariable Long id) {
 
         return inventarioService.obtenerPorId(id);
     }
@@ -35,17 +34,14 @@ public class InventarioController {
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public InventarioResponseDTO crear(
-            @Valid @RequestBody InventarioRequestDTO dto) {
+    public InventarioResponseDTO crear(@Valid @RequestBody InventarioRequestDTO dto) {
 
         return inventarioService.guardar(dto);
     }
 
     
     @PutMapping("/{id}")
-    public InventarioResponseDTO actualizar(
-            @PathVariable Long id,
-            @Valid @RequestBody InventarioRequestDTO dto) {
+    public InventarioResponseDTO actualizar(@PathVariable Long id,@Valid @RequestBody InventarioRequestDTO dto) {
 
         return inventarioService.actualizar(id, dto);
     }
@@ -53,18 +49,15 @@ public class InventarioController {
    
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminar(
-            @PathVariable Long id) {
+    public void eliminar(@PathVariable Long id) {
 
         inventarioService.eliminar(id);
     }
 
     
     @GetMapping("/producto/{productoId}")
-    public InventarioResponseDTO buscarPorProductoId(
-            @PathVariable Long productoId) {
+    public InventarioResponseDTO buscarPorProductoId(@PathVariable Long productoId) {
 
-        return inventarioService
-                .buscarPorProductoId(productoId);
+        return inventarioService.buscarPorProductoId(productoId);
     }
 }
