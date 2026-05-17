@@ -11,5 +11,5 @@ import com.example.empleado_service.dto.UsuarioResponse;
 public interface AuthClient {
 
     @GetMapping("/api/v1/autenticacion/usuarios/{id}")
-       UsuarioResponse buscarUsuarioPorId(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader);
+       UsuarioResponse buscarUsuarioPorId(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorizationHeader);
 }
