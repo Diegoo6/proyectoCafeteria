@@ -55,35 +55,35 @@ public class EmpleadoController {
     }
 
     @GetMapping("/cargo")
-    public ResponseEntity<List<EmpleadoResponse>> listarPorCargo(@RequestParam TipoCargo tipoCargo) {
+    public ResponseEntity<List<EmpleadoResponse>> listarPorCargo(@RequestParam("cargo") TipoCargo tipoCargo) {
         List<EmpleadoResponse> listarPorCargo = empleadoService.listarPorCargo(tipoCargo);
 
         return ResponseEntity.ok(listarPorCargo);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmpleadoResponse> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<EmpleadoResponse> buscarPorId(@PathVariable("id") Long id) {
         EmpleadoResponse empleadoEncontrado = empleadoService.buscarPorId(id);
 
         return ResponseEntity.ok(empleadoEncontrado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmpleadoResponse> modificarPorId(@PathVariable Long id, @Valid @RequestBody EmpleadoModificar request) {
+    public ResponseEntity<EmpleadoResponse> modificarPorId(@PathVariable("id") Long id, @Valid @RequestBody EmpleadoModificar request) {
         EmpleadoResponse empleadoModificar = empleadoService.modificarEmpleadoPorId(id, request);
 
         return ResponseEntity.ok(empleadoModificar);
     }
 
     @PutMapping("/{id}/cargo")
-    public ResponseEntity<EmpleadoResponse> modificarCargo(@PathVariable Long id,@Valid @RequestBody EmpleadoNuevoCargo request) {
+    public ResponseEntity<EmpleadoResponse> modificarCargo(@PathVariable("id") Long id,@Valid @RequestBody EmpleadoNuevoCargo request) {
         EmpleadoResponse nuevoCargo = empleadoService.modificarCargo(id, request.getTipoCargo());
         
         return ResponseEntity.ok(nuevoCargo);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarEmpleado(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarEmpleado(@PathVariable("id") Long id) {
         empleadoService.eliminarEmpleadoPorId(id);
 
         return ResponseEntity.noContent().build();

@@ -21,7 +21,10 @@ import com.example.autenticacion_service.repository.RolRepository;
 import com.example.autenticacion_service.repository.UsuarioRepository;
 import com.example.autenticacion_service.security.JwtService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class AutenticacionService {
 
     private final UsuarioRepository usuarioRepository;
@@ -44,17 +47,21 @@ public class AutenticacionService {
     @Transactional
     public UsuarioResponse registrarUsuario(RegisterRequest request) {
         if (usuarioRepository.findByUsername(request.getUsername()).isPresent()) {  // Validar que el usuario no exista
+            log.warn("El usuario {} ya existe.", request.getUsername());
             throw new RuntimeException("El usuario ya existe");
         }
 
         Usuario usuarioNuevo = usuarioMapper.toEntity(request);
-        Rol rolOtorgado = rolRepository.findByNombre(TipoRol.EMPLEADO).orElseThrow(() -> new RuntimeException("Error interno: Rol EMPLEADO no configurado en la base de datos")); // Guarda el rol que se quiere asignar
+        Rol rolOtorgado = rolRepository.findByNombre(TipoRol.EMPLEADO).orElseThrow(()
+                        -> {log.error("Rol no configurado en la base de datos");
+                        return new RuntimeException("Error interno: Rol EMPLEADO no configurado en la base de datos");}); // Guarda el rol que se quiere asignar
 
         usuarioNuevo.setPassword(passwordEncoder.encode(usuarioNuevo.getPassword()));
         usuarioNuevo.setRol(rolOtorgado);
 
         Usuario usuarioGuardado = usuarioRepository.save(usuarioNuevo);
 
+        log.info("Usuario {} agregado correctamente.", request.getUsername());
         return usuarioMapper.toResponse(usuarioGuardado);
 
     }
@@ -62,33 +69,41 @@ public class AutenticacionService {
     public LoginResponse usuarioLogin(LoginRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        Usuario usuarioLogin = usuarioRepository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuarioLogin = usuarioRepository.findByUsername(request.getUsername()).orElseThrow(() ->
+                            {log.warn("Usuario {} no encontrado.", request.getUsername());
+                            return new RuntimeException("Usuario no encontrado");});
 
         String token = jwtService.generateToken(usuarioLogin.getUsername(), usuarioLogin.getRol().getNombre().name());
 
+        log.info("Login exitoso.");
         return new LoginResponse(token);
     }
 
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
     public UsuarioResponse buscarPorId(Long id) {
-        Usuario usuarioEncontrado = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuarioEncontrado = usuarioRepository.findById(id).orElseThrow(()
+                                    -> {log.warn("Usuario con id {} no encontrado.", id);
+                                    return new RuntimeException("Usuario no encontrado");});
 
+        log.info("Usuario con id {} encontrado.", id);
         return usuarioMapper.toResponse(usuarioEncontrado);
     }
 
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
     public List<UsuarioResponse> listarUsuarios() {
         List<Usuario> listaUsuarios = usuarioRepository.findAll();
 
+        log.info("Listando usuarios. {} encontrados", listaUsuarios.size());
         return listaUsuarios.stream()
                             .map(usuarioMapper::toResponse)
                             .toList();
     }
 
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
     public List<UsuarioResponse> listarPorRol(TipoRol rol) {
         List<Usuario> listaRol = usuarioRepository.findByRolNombre(rol);
 
+        log.info("Listando usuarios con rol {}. {} encontrados.", rol, listaRol.size());
         return listaRol.stream()
                 .map(usuarioMapper::toResponse)
                 .toList();
@@ -96,21 +111,29 @@ public class AutenticacionService {
 
     @Transactional
     public UsuarioResponse cambiarRol(Long id, NuevoRolRequest request) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() ->
+                        {log.warn("Usuario con id {} no encontrado.", id);
+                        return new RuntimeException("Usuario no encontrado");});
 
-        Rol nuevoRol = rolRepository.findByNombre(request.getNuevoRol()).orElseThrow(() -> new RuntimeException("Rol inválido"));
+        Rol nuevoRol = rolRepository.findByNombre(request.getNuevoRol()).orElseThrow(() ->
+                    {log.error("Rol {} no configurado en la base de datos.", request.getNuevoRol());
+                    return new RuntimeException("Rol inválido");});
 
         usuario.setRol(nuevoRol);
 
         Usuario usuarioActualizado = usuarioRepository.save(usuario);
 
+        log.info("Rol de usuario con id {} modificado exitosamente.", id);
         return usuarioMapper.toResponse(usuarioActualizado);
     }
 
     @Transactional
     public void eliminarPorId(Long id) {
-        Usuario aEliminar = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario aEliminar = usuarioRepository.findById(id).orElseThrow(() ->
+                            {log.warn("Usuario con id {} no encontrado.", id);
+                            return new RuntimeException("Usuario no encontrado");});
 
+        log.info("Usuario {} eliminado exitosamente.", id);
         usuarioRepository.delete(aEliminar);
     }
     

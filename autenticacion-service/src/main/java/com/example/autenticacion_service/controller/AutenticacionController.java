@@ -52,7 +52,7 @@ public class AutenticacionController {
     }
     
     @GetMapping("/usuarios/{id}")
-    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable("id") Long id) {
         return ResponseEntity.ok(autenticacionService.buscarPorId(id));
     }
 
@@ -64,7 +64,7 @@ public class AutenticacionController {
     }
 
     @GetMapping("/usuarios/rol")
-    public ResponseEntity<List<UsuarioResponse>> filtrarPorRol(@RequestParam TipoRol rol) {
+    public ResponseEntity<List<UsuarioResponse>> filtrarPorRol(@RequestParam("rol") TipoRol rol) {
         List<UsuarioResponse> listaRol = autenticacionService.listarPorRol(rol);
 
         return ResponseEntity.ok(listaRol);
@@ -72,14 +72,14 @@ public class AutenticacionController {
     
     
     @PutMapping("/usuarios/{id}/cambiar-rol")
-    public ResponseEntity<UsuarioResponse> cambiarRol(@PathVariable Long id,@Valid @RequestBody NuevoRolRequest request) {
+    public ResponseEntity<UsuarioResponse> cambiarRol(@PathVariable("id") Long id,@Valid @RequestBody NuevoRolRequest request) {
         UsuarioResponse usuario = autenticacionService.cambiarRol(id, request);
         
         return ResponseEntity.ok(usuario);
     }
 
     @DeleteMapping("/usuarios/{id}")
-    public ResponseEntity<Void> eliminarPorId(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarPorId(@PathVariable("id") Long id) {
         autenticacionService.eliminarPorId(id);
 
         return ResponseEntity.noContent().build();
