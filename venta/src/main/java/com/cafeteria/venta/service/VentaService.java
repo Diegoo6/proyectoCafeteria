@@ -1,13 +1,15 @@
 package com.cafeteria.venta.service;
 
-<<<<<<< HEAD
-=======
+
 import java.time.LocalDate;
->>>>>>> master
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.cafeteria.venta.client.EmpleadoClient;
+import com.cafeteria.venta.client.InventarioClient;
+import com.cafeteria.venta.client.ProductoClient;
+import com.cafeteria.venta.dto.ProductoResponse;
 import com.cafeteria.venta.dto.VentaRequest;
 import com.cafeteria.venta.dto.VentaResponse;
 import com.cafeteria.venta.mapper.VentaMapper;
@@ -21,10 +23,16 @@ public class VentaService {
 
     private final VentaRepository ventaRepository;
     private final VentaMapper ventaMapper;
+    private final ProductoClient productoClient;
+    private final InventarioClient inventarioClient;
+    private final EmpleadoClient empleadoClient;
 
-    public VentaService(VentaRepository ventaRepository, VentaMapper ventaMapper){
+    public VentaService(VentaRepository ventaRepository, VentaMapper ventaMapper, ProductoClient productoClient, InventarioClient inventarioClient, EmpleadoClient empleadoClient){
         this.ventaRepository = ventaRepository;
         this.ventaMapper = ventaMapper;
+        this.productoClient = productoClient;
+        this.inventarioClient = inventarioClient;
+        this.empleadoClient = empleadoClient;
     }
 
     public List<VentaResponse> listarVentas(){   //Listar todas las ventas
@@ -42,35 +50,39 @@ public class VentaService {
     }
 
     public VentaResponse guardarVenta(VentaRequest request){
+
+        empleadoClient.obtenerEmpleado(request.getEmpleadoId());
         
         Venta venta = ventaMapper.toEntity(request);
+
+        venta.setFechaVenta(LocalDate.now());
 
         double total = 0;
 
         for(DetalleVenta detalle : venta.getDetalleVenta()){
 
-            double precio = 5000; //esto es momentaneo, solo para probar, despues tendre que llamar al microservicio producto
+            ProductoResponse producto = productoClient.obtenerProducto(detalle.getProductoId());
+            
+
+            double precio = producto.getPrecio();
             
             detalle.setPrecioUnitario(precio);
             detalle.setSubtotal(precio * detalle.getCantidad());
-
-<<<<<<< HEAD
-=======
             detalle.setVenta(venta);
 
->>>>>>> master
+            inventarioClient.descontarStock(
+            detalle.getProductoId(),
+            detalle.getCantidad()
+            );
+
+
             total += detalle.getSubtotal();
 
         }
 
         venta.setTotal(total);
 
-<<<<<<< HEAD
-=======
-        venta.setFechaVenta(LocalDate.now());
 
-
->>>>>>> master
         Venta ventaGuardada = ventaRepository.save(venta);
 
         return ventaMapper.toResponse(ventaGuardada);
@@ -79,5 +91,7 @@ public class VentaService {
     public void eliminarPorId(Long id){
         ventaRepository.deleteById(id);
     }
+
+
 
 }

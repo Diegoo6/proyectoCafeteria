@@ -18,7 +18,6 @@ public class VentaResponse {
     private Long id;
     private LocalDate fechaVenta;
     private Double total;
-    private String estadoDePago;
     private String metodoDePago;
     private String observacion;
     private Long empleadoId;

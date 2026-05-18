@@ -7,6 +7,9 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.cafeteria.reporte.client.EmpleadoClient;
+import com.cafeteria.reporte.client.ProductoClient;
+import com.cafeteria.reporte.client.VentaClient;
 import com.cafeteria.reporte.dto.DashboardResponse;
 import com.cafeteria.reporte.dto.EmpleadoResponse;
 import com.cafeteria.reporte.dto.ProductoMasVendidoResponse;
@@ -15,9 +18,6 @@ import com.cafeteria.reporte.dto.TotalVentasResponse;
 import com.cafeteria.reporte.dto.VentaResponse;
 import com.cafeteria.reporte.dto.VentasPorEmpleadoResponse;
 import com.cafeteria.reporte.dto.VentasPorFechaResponse;
-import com.cafeteria.reporte.feign.EmpleadoClient;
-import com.cafeteria.reporte.feign.ProductoClient;
-import com.cafeteria.reporte.feign.VentaClient;
 
 @Service
 public class ReporteService {

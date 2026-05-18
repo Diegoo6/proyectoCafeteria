@@ -18,10 +18,6 @@ public class VentaRequest {
 
     @NotNull
     @Size(max= 25)
-    private String estadoDePago;
-
-    @NotNull
-    @Size(max= 25)
     private String metodoDePago;
 
     @Size(max= 225)

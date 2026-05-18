@@ -1,4 +1,4 @@
-package com.cafeteria.reporte.feign;
+package com.cafeteria.reporte.client;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import com.cafeteria.reporte.dto.VentaResponse;
 
 public interface VentaClient {
 
-    @GetMapping("/api/ventas")
+    @GetMapping("/api/v1/ventas")
     List<VentaResponse> listarVentas();
 
 }

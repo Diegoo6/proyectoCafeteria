@@ -18,7 +18,7 @@ import com.cafeteria.venta.service.VentaService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/ventas")
+@RequestMapping("/api/v1/ventas")
 
 public class VentaController {
 

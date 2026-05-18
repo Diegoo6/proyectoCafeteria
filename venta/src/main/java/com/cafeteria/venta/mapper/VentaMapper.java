@@ -24,7 +24,6 @@ public class VentaMapper {
         respuesta.setId(venta.getId());
         respuesta.setFechaVenta(venta.getFechaVenta());
         respuesta.setTotal(venta.getTotal());
-        respuesta.setEstadoDePago(venta.getEstadoDePago());
         respuesta.setMetodoDePago(venta.getMetodoDePago());
         respuesta.setObservacion(venta.getObservacion());
         respuesta.setEmpleadoId(venta.getEmpleadoId());
@@ -58,7 +57,6 @@ public class VentaMapper {
 
         Venta venta = new Venta();
 
-        venta.setEstadoDePago(request.getEstadoDePago());
         venta.setMetodoDePago(request.getMetodoDePago());
         venta.setObservacion(request.getObservacion());
         venta.setEmpleadoId(request.getEmpleadoId());

@@ -18,7 +18,7 @@ import com.cafeteria.reporte.dto.VentasPorFechaResponse;
 import com.cafeteria.reporte.service.ReporteService;
 
 @RestController
-@RequestMapping("/api/reportes")
+@RequestMapping("/api/v1/reportes")
 
 public class ReporteController {
 
