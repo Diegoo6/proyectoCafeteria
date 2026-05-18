@@ -32,10 +32,10 @@ public class SecurityConfig {
 
                      
                         .requestMatchers(HttpMethod.GET, "/api/v1/productos/**")
-                        .permitAll()
+                        .hasAnyRole("ADMIN", "EMPLEADO")
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/categorias/**")
-                        .permitAll()
+                        .hasAnyRole("ADMIN", "EMPLEADO")
 
                       
                         .requestMatchers(HttpMethod.POST, "/api/v1/productos/**")

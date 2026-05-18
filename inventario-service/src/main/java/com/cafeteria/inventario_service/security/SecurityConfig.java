@@ -31,11 +31,11 @@ public class SecurityConfig {
 
                        
                         .requestMatchers(HttpMethod.GET, "/api/v1/inventarios/**")
-                        .permitAll()
+                        .hasAnyRole("ADMIN", "EMPLEADO")
 
                     
                         .requestMatchers(HttpMethod.GET, "/api/v1/movimientos/**")
-                        .permitAll()
+                        .hasAnyRole("ADMIN", "EMPLEADO")
 
                        
                         .requestMatchers(HttpMethod.POST, "/api/v1/inventarios/**")
