@@ -60,4 +60,10 @@ public class InventarioController {
 
         return inventarioService.buscarPorProductoId(productoId);
     }
+
+    @PutMapping("/descontar/{productoId}")
+        public void descontarStock(@PathVariable Long productoId,@RequestParam Integer cantidad) {
+
+        inventarioService.descontarStock(productoId, cantidad);
+    }
 }
