@@ -24,30 +24,33 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
                 .authorizeHttpRequests(auth -> auth
 
-                        
-                        .requestMatchers(HttpMethod.GET, "/inventarios/**")
-                        .hasAnyRole("ADMIN", "EMPLEADO")
+                       
+                        .requestMatchers(HttpMethod.GET, "/api/v1/inventarios/**")
+                        .permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/movimientos/**")
-                        .hasAnyRole("ADMIN", "EMPLEADO")
-
-                      
-                        .requestMatchers(HttpMethod.POST, "/inventarios/**")
-                        .hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.POST, "/movimientos/**")
-                        .hasRole("ADMIN")
-
-                      
-                        .requestMatchers(HttpMethod.PUT, "/inventarios/**")
-                        .hasRole("ADMIN")
+                    
+                        .requestMatchers(HttpMethod.GET, "/api/v1/movimientos/**")
+                        .permitAll()
 
                        
-                        .requestMatchers(HttpMethod.DELETE, "/inventarios/**")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/inventarios/**")
+                        .hasRole("ADMIN")
+
+                        
+                        .requestMatchers(HttpMethod.POST, "/api/v1/movimientos/**")
+                        .hasRole("ADMIN")
+
+                        
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/inventarios/**")
+                        .hasRole("ADMIN")
+
+                        
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/inventarios/**")
                         .hasRole("ADMIN")
 
                         .anyRequest().authenticated()
