@@ -40,10 +40,7 @@ public class VentaController {
     }
 
     @PostMapping
-    public ResponseEntity<VentaResponse> guardarVenta(
-        @Valid
-        @RequestBody
-        VentaRequest request){
+    public ResponseEntity<VentaResponse> guardarVenta(@Valid @RequestBody VentaRequest request){
             return ResponseEntity.ok(ventaService.guardarVenta(request));
         }
 

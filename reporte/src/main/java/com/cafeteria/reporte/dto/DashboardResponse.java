@@ -18,6 +18,5 @@ public class DashboardResponse {
 
     private String productoMasVendido;
 
-    private Integer ventasPendientes;
 
 }

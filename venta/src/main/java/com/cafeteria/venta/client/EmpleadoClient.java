@@ -10,8 +10,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 )
 public interface EmpleadoClient {
 
-    @GetMapping("/api/v1/empleados/{id}")
-    Object obtenerEmpleado(
-            @PathVariable Long id
-    );
+    @GetMapping("/api/v1/empleados/{id}") Object obtenerEmpleado(@PathVariable Long id);
 }

@@ -42,7 +42,6 @@ public class ReporteService {
 
         int ventasHoy = 0;
         double totalHoy = 0;
-        int ventasPendientes = 0;
 
         for (VentaResponse venta : ventas) {
 
@@ -51,14 +50,10 @@ public class ReporteService {
                 totalHoy += venta.getTotal();
             }
 
-            if (venta.getEstadoDePago().equalsIgnoreCase("pendiente")) {
-                ventasPendientes++;
-            }
         }
 
         dashboard.setVentasHoy(ventasHoy);
         dashboard.setTotalHoy(totalHoy);
-        dashboard.setVentasPendientes(ventasPendientes);
         dashboard.setProductoMasVendido("Proximamente");
 
         return dashboard;

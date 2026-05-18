@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.cafeteria.reporte.dto.VentaResponse;
 
-@FeignClient(name = "venta", url = "http://localhost:8081")
+@FeignClient(name = "venta", url = "http://localhost:8085")
 
 public interface VentaClient {
 
