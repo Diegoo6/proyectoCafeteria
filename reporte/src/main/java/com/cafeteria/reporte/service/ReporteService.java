@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.cafeteria.reporte.client.EmpleadoClient;
@@ -22,6 +24,8 @@ import com.cafeteria.reporte.dto.VentasPorFechaResponse;
 @Service
 public class ReporteService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ReporteService.class);
+
     private final VentaClient ventaClient;
     private final EmpleadoClient empleadoClient;
     private final ProductoClient productoClient;
@@ -29,12 +33,15 @@ public class ReporteService {
     public ReporteService(VentaClient ventaClient,
                           EmpleadoClient empleadoClient,
                           ProductoClient productoClient) {
+
         this.ventaClient = ventaClient;
         this.empleadoClient = empleadoClient;
         this.productoClient = productoClient;
     }
 
     public DashboardResponse obtenerDashboard() {
+
+        logger.info("Generando dashboard general");
 
         List<VentaResponse> ventas = ventaClient.listarVentas();
 
@@ -49,17 +56,20 @@ public class ReporteService {
                 ventasHoy++;
                 totalHoy += venta.getTotal();
             }
-
         }
 
         dashboard.setVentasHoy(ventasHoy);
         dashboard.setTotalHoy(totalHoy);
         dashboard.setProductoMasVendido("Proximamente");
 
+        logger.info("Dashboard generado correctamente. Ventas hoy: {}, Total hoy: {}", ventasHoy, totalHoy);
+
         return dashboard;
     }
 
     public VentasPorEmpleadoResponse ventasPorEmpleado(Long empleadoId) {
+
+        logger.info("Generando reporte de ventas para empleado {}", empleadoId);
 
         List<VentaResponse> ventas = ventaClient.listarVentas();
 
@@ -82,10 +92,17 @@ public class ReporteService {
         response.setCantidadVentas(cantidadVentas);
         response.setTotalVendido(totalVendido);
 
+        logger.info("Reporte generado para empleado {} con {} ventas y total {}",
+                empleadoId,
+                cantidadVentas,
+                totalVendido);
+
         return response;
     }
 
     public ProductoMasVendidoResponse productoMasVendido() {
+
+        logger.info("Generando reporte de producto más vendido");
 
         List<VentaResponse> ventas = ventaClient.listarVentas();
 
@@ -96,6 +113,7 @@ public class ReporteService {
             if (venta.getDetalles() != null) {
 
                 venta.getDetalles().forEach(detalle -> {
+
                     Long productoId = detalle.getProductoId();
                     Integer cantidad = detalle.getCantidad();
 
@@ -116,9 +134,13 @@ public class ReporteService {
         ProductoMasVendidoResponse response = new ProductoMasVendidoResponse();
 
         if (productoMasVendidoId == null) {
+
+            logger.warn("No existen ventas registradas para calcular producto más vendido");
+
             response.setNombreProducto("Sin ventas registradas");
             response.setCantidadVendida(0);
             response.setCategoria("Sin categoria");
+
             return response;
         }
 
@@ -128,10 +150,14 @@ public class ReporteService {
         response.setCantidadVendida(contadorProductos.get(productoMasVendidoId));
         response.setCategoria(producto.getCategoriaNombre());
 
+        logger.info("Producto más vendido generado correctamente: {}", producto.getNombre());
+
         return response;
     }
 
     public VentasPorFechaResponse ventasPorFecha(LocalDate fecha){
+
+        logger.info("Generando reporte de ventas para fecha {}", fecha);
 
         List<VentaResponse> ventas = ventaClient.listarVentas();
 
@@ -143,7 +169,6 @@ public class ReporteService {
             if (venta.getFechaVenta().equals(fecha)){
 
                 cantidadVentas++;
-
                 totalVendido += venta.getTotal();
             }
         }
@@ -154,12 +179,16 @@ public class ReporteService {
         response.setCantidadVentas(cantidadVentas);
         response.setTotalVendido(totalVendido);
 
+        logger.info("Reporte por fecha generado. Cantidad ventas: {}, Total vendido: {}",
+                cantidadVentas,
+                totalVendido);
+
         return response;
-
-
     }
 
     public TotalVentasResponse totalVentas() {
+
+        logger.info("Calculando total general de ventas");
 
         List<VentaResponse> ventas = ventaClient.listarVentas();
 
@@ -173,7 +202,8 @@ public class ReporteService {
 
         response.setTotalVentas(total);
 
+        logger.info("Total general de ventas calculado correctamente: {}", total);
+
         return response;
     }
-
 }
