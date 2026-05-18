@@ -1,4 +1,4 @@
-package com.cafeteria.venta;
+package com.cafeteria.venta.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
