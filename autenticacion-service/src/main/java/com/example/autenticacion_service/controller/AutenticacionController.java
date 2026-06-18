@@ -17,6 +17,8 @@ import com.example.autenticacion_service.dto.UsuarioResponse;
 import com.example.autenticacion_service.model.TipoRol;
 import com.example.autenticacion_service.service.AutenticacionService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
-
+@Tag(name = "Autenticacion", description = "Operaciones relacionadas con autenticacion y gestion de usuarios")
 @RestController
 @Validated
 @RequestMapping("/api/v1/autenticacion")
@@ -39,6 +41,7 @@ public class AutenticacionController {
         this.autenticacionService = autenticacionService;
     }
 
+    @Operation(summary = "Registrar usuario", description = "Crea un nuevo usuario con ROL: EMPLEADO")
     @PostMapping("/registrar")
     public ResponseEntity<UsuarioResponse> registrarUsuario(@Valid @RequestBody RegisterRequest request) {
         UsuarioResponse usuarioRegistrado = autenticacionService.registrarUsuario(request);
@@ -46,16 +49,19 @@ public class AutenticacionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRegistrado);
     }
 
+    @Operation(summary = "Iniciar Sesion", description = "Autentica al usuario y retorna un TOKEN")
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> usuarioLogin(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(autenticacionService.usuarioLogin(request));
     }
     
+    @Operation(summary = "Buscar usuario por ID", description = "Obtiene datos de un usuario segun su ID")
     @GetMapping("/usuarios/{id}")
     public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable("id") Long id) {
         return ResponseEntity.ok(autenticacionService.buscarPorId(id));
     }
 
+    @Operation(summary = "Listar Usuarios", description = "Obtiene la lista completa de usuarios registrados")
     @GetMapping("/usuarios")
     public ResponseEntity<List<UsuarioResponse>> listarUsuarios() {
         List<UsuarioResponse> listaUsuarios = autenticacionService.listarUsuarios();
@@ -63,6 +69,7 @@ public class AutenticacionController {
         return ResponseEntity.ok(listaUsuarios);
     }
 
+    @Operation(summary = "Filtrar usuarios por ROL", description = "Listar usuarios segun su ROL")
     @GetMapping("/usuarios/rol")
     public ResponseEntity<List<UsuarioResponse>> filtrarPorRol(@RequestParam("rol") TipoRol rol) {
         List<UsuarioResponse> listaRol = autenticacionService.listarPorRol(rol);
@@ -70,7 +77,7 @@ public class AutenticacionController {
         return ResponseEntity.ok(listaRol);
     }
     
-    
+    @Operation(summary = "Cambiar ROL de usuario", description = "Actualiza el ROL de un usuario existente")
     @PutMapping("/usuarios/{id}/cambiar-rol")
     public ResponseEntity<UsuarioResponse> cambiarRol(@PathVariable("id") Long id,@Valid @RequestBody NuevoRolRequest request) {
         UsuarioResponse usuario = autenticacionService.cambiarRol(id, request);
@@ -78,6 +85,7 @@ public class AutenticacionController {
         return ResponseEntity.ok(usuario);
     }
 
+    @Operation(summary = "Eliminar usuario", description = "Elimina un usuario segun su id")
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<Void> eliminarPorId(@PathVariable("id") Long id) {
         autenticacionService.eliminarPorId(id);

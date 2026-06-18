@@ -15,18 +15,12 @@ import com.example.autenticacion_service.repository.RolRepository;
 @Configuration
 public class DataInitializer {
 
-    private final PasswordEncoder passwordEncoder;
-    private final UsuarioRepository usuarioRepository;
-
-    DataInitializer(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
-        this.usuarioRepository = usuarioRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
     @Bean
     @Transactional
-    CommandLineRunner initData(RolRepository rolRepository) { // Inicializa datos al arrancar el sistema
-        return args -> 
+    CommandLineRunner initData(RolRepository rolRepository,
+                                PasswordEncoder passwordEncoder,
+                                UsuarioRepository usuarioRepository) {
+        return args ->
         {
             if (rolRepository.findByNombre(TipoRol.ADMIN).isEmpty()) {
                 rolRepository.save(new Rol(null, TipoRol.ADMIN));
