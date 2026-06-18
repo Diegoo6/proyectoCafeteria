@@ -2,6 +2,7 @@ package com.example.autenticacion_service.controller;
 
 import java.util.List;
 
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Tag(name = "Autenticacion", description = "Operaciones relacionadas con autenticacion y gestion de usuarios")
 @RestController
@@ -57,8 +60,26 @@ public class AutenticacionController {
     
     @Operation(summary = "Buscar usuario por ID", description = "Obtiene datos de un usuario segun su ID")
     @GetMapping("/usuarios/{id}")
-    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(autenticacionService.buscarPorId(id));
+    public ResponseEntity<EntityModel<UsuarioResponse>> buscarPorId(@PathVariable("id") Long id) {
+
+        UsuarioResponse usuarioEncontrado = autenticacionService.buscarPorId(id);
+
+        EntityModel<UsuarioResponse> usuarioConLinks = EntityModel.of(usuarioEncontrado,
+                                                                      linkTo(methodOn(AutenticacionController.class)
+                                                                             .buscarPorId(id)).withSelfRel(),
+
+                                                                      linkTo(methodOn(AutenticacionController.class)
+                                                                             .listarUsuarios()).withRel("usuarios"),
+
+                                                                      linkTo(methodOn(AutenticacionController.class)
+                                                                             .cambiarRol(id, null))
+                                                                             .withRel("cambiar-rol"),
+
+                                                                      linkTo(methodOn(AutenticacionController.class)
+                                                                             .eliminarPorId(id))
+                                                                             .withRel("eliminar-por-id"));
+    
+        return ResponseEntity.ok(usuarioConLinks);
     }
 
     @Operation(summary = "Listar Usuarios", description = "Obtiene la lista completa de usuarios registrados")
