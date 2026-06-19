@@ -1,8 +1,12 @@
 package com.example.empleado_service.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,26 +56,69 @@ public class EmpleadoController {
 
     @Operation(summary = "Listar empleados", description = "Obtiene la lista completa de empleados")
     @GetMapping
-    public ResponseEntity<List<EmpleadoResponse>> listarEmpleados() {
+    public ResponseEntity<List<EntityModel<EmpleadoResponse>>> listarEmpleados() {
         List<EmpleadoResponse> listaEmpleados = empleadoService.listarEmpleados();
 
-        return ResponseEntity.ok(listaEmpleados);
+        List<EntityModel<EmpleadoResponse>> listarEmpleadosConLinks = listaEmpleados.stream()
+                                                                      .map(empleado -> EntityModel.of(empleado,
+                                                                      linkTo(methodOn(EmpleadoController.class)
+                                                                      .buscarPorId(empleado.getId())).withSelfRel(),
+
+                                                                      linkTo(methodOn(EmpleadoController.class)
+                                                                      .modificarPorId(empleado.getId(), null)).withRel("modificar-empleado"),
+
+                                                                      linkTo(methodOn(EmpleadoController.class)
+                                                                      .modificarCargo(empleado.getId(), null)).withRel("modificar-cargo"),
+
+                                                                      linkTo(methodOn(EmpleadoController.class)
+                                                                      .eliminarEmpleado(empleado.getId())).withRel("eliminar-empleado")
+                                                                      )).toList();
+
+        return ResponseEntity.ok(listarEmpleadosConLinks);
     }
 
     @Operation(summary = "Listar por cargo", description = "Obtiene una lista de empleados segun el cargo")
     @GetMapping("/cargo")
-    public ResponseEntity<List<EmpleadoResponse>> listarPorCargo(@RequestParam("cargo") TipoCargo tipoCargo) {
+    public ResponseEntity<List<EntityModel<EmpleadoResponse>>> listarPorCargo(@RequestParam("cargo") TipoCargo tipoCargo) {
         List<EmpleadoResponse> listarPorCargo = empleadoService.listarPorCargo(tipoCargo);
 
-        return ResponseEntity.ok(listarPorCargo);
+        List<EntityModel<EmpleadoResponse>> listaCargoConLinks = listarPorCargo.stream()
+                                                                 .map(empleado -> EntityModel.of(empleado,
+                                                                 linkTo(methodOn(EmpleadoController.class)
+                                                                 .buscarPorId(empleado.getId())).withSelfRel(),
+
+                                                                 linkTo(methodOn(EmpleadoController.class)
+                                                                 .modificarPorId(empleado.getId(), null)).withRel("modificar-empleado"),
+
+                                                                 linkTo(methodOn(EmpleadoController.class)
+                                                                 .modificarCargo(empleado.getId(), null)).withRel("modificar-cargo")
+                                                                 )).toList();
+
+        return ResponseEntity.ok(listaCargoConLinks);   
     }
 
     @Operation(summary = "Buscar por ID", description = "Obtiene los datos de un empleado segun su ID")
     @GetMapping("/{id}")
-    public ResponseEntity<EmpleadoResponse> buscarPorId(@PathVariable("id") Long id) {
+    public ResponseEntity<EntityModel<EmpleadoResponse>> buscarPorId(@PathVariable("id") Long id) {
         EmpleadoResponse empleadoEncontrado = empleadoService.buscarPorId(id);
 
-        return ResponseEntity.ok(empleadoEncontrado);
+        EntityModel<EmpleadoResponse> empleadoConLink = EntityModel.of(empleadoEncontrado,
+                                                        linkTo(methodOn(EmpleadoController.class)
+                                                        .buscarPorId(id)).withSelfRel(),
+
+                                                        linkTo(methodOn(EmpleadoController.class)
+                                                        .listarEmpleados()).withRel("listar-todos-empleados"),
+                                                        
+                                                        linkTo(methodOn(EmpleadoController.class)
+                                                        .modificarPorId(id, null)).withRel("modificar-empleado"),
+
+                                                        linkTo(methodOn(EmpleadoController.class)
+                                                        .modificarCargo(id, null)).withRel("modificar-cargo"),
+
+                                                        linkTo(methodOn(EmpleadoController.class)
+                                                        .eliminarEmpleado(id)).withRel("eliminar-empleado"));
+
+        return ResponseEntity.ok(empleadoConLink);
     }
 
     @Operation(summary = "Modificar por ID", description = "Actualiza los datos de un empleado existente")

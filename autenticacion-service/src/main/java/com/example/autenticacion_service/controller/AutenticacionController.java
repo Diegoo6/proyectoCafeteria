@@ -69,7 +69,7 @@ public class AutenticacionController {
                                                                              .buscarPorId(id)).withSelfRel(),
 
                                                                       linkTo(methodOn(AutenticacionController.class)
-                                                                             .listarUsuarios()).withRel("usuarios"),
+                                                                             .listarUsuarios()).withRel("listar-todos-usuarios"),
 
                                                                       linkTo(methodOn(AutenticacionController.class)
                                                                              .cambiarRol(id, null))
@@ -77,25 +77,47 @@ public class AutenticacionController {
 
                                                                       linkTo(methodOn(AutenticacionController.class)
                                                                              .eliminarPorId(id))
-                                                                             .withRel("eliminar-por-id"));
+                                                                             .withRel("eliminar-usuario"));
     
         return ResponseEntity.ok(usuarioConLinks);
     }
 
     @Operation(summary = "Listar Usuarios", description = "Obtiene la lista completa de usuarios registrados")
     @GetMapping("/usuarios")
-    public ResponseEntity<List<UsuarioResponse>> listarUsuarios() {
+    public ResponseEntity<List<EntityModel<UsuarioResponse>>> listarUsuarios() {
         List<UsuarioResponse> listaUsuarios = autenticacionService.listarUsuarios();
 
-        return ResponseEntity.ok(listaUsuarios);
+        List<EntityModel<UsuarioResponse>> listaUsuariosConLink = listaUsuarios.stream()
+                                                                  .map(usuario -> EntityModel.of(usuario,
+                                                                   linkTo(methodOn(AutenticacionController.class)
+                                                                  .buscarPorId(usuario.getId())).withSelfRel(),
+                                                                  
+                                                                   linkTo(methodOn(AutenticacionController.class)
+                                                                  .cambiarRol(usuario.getId(), null))
+                                                                  .withRel("cambiar-rol"),
+
+                                                                   linkTo(methodOn(AutenticacionController.class)
+                                                                  .eliminarPorId(usuario.getId()))
+                                                                  .withRel("eliminar-usuario"))).toList();
+
+        return ResponseEntity.ok(listaUsuariosConLink);
     }
 
     @Operation(summary = "Filtrar usuarios por ROL", description = "Listar usuarios segun su ROL")
     @GetMapping("/usuarios/rol")
-    public ResponseEntity<List<UsuarioResponse>> filtrarPorRol(@RequestParam("rol") TipoRol rol) {
+    public ResponseEntity<List<EntityModel<UsuarioResponse>>> filtrarPorRol(@RequestParam("rol") TipoRol rol) {
         List<UsuarioResponse> listaRol = autenticacionService.listarPorRol(rol);
 
-        return ResponseEntity.ok(listaRol);
+        List<EntityModel<UsuarioResponse>> rolConLink = listaRol.stream()
+                                                        .map(usuario -> EntityModel.of(usuario,
+                                                        linkTo(methodOn(AutenticacionController.class)
+                                                        .buscarPorId(usuario.getId())).withSelfRel(),
+
+                                                        linkTo(methodOn(AutenticacionController.class)
+                                                        .cambiarRol(usuario.getId(), null)).withRel("cambiar-rol")
+                                                        )).toList();
+
+        return ResponseEntity.ok(rolConLink);
     }
     
     @Operation(summary = "Cambiar ROL de usuario", description = "Actualiza el ROL de un usuario existente")
