@@ -7,63 +7,200 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import java.util.List;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+
+@Tag(name = "Inventarios", description = "Operaciones relacionadas con la gestión de inventario")
 @RestController
 @RequestMapping("api/v1/inventarios")
 @RequiredArgsConstructor
 public class InventarioController {
 
+
     private final InventarioService inventarioService;
 
-    
+    @Operation(summary = "Listar inventarios")
+    @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente")
     @GetMapping
-    public List<InventarioResponseDTO> listar() {
+    public ResponseEntity<List<InventarioResponseDTO>> listar() {
 
-        return inventarioService.listar();
+        List<InventarioResponseDTO> inventarios = inventarioService.listar();
+
+        inventarios.forEach(inventario -> {
+
+            inventario.add(
+                    linkTo(
+                            methodOn(InventarioController.class)
+                                    .obtener(inventario.getId())
+                    ).withSelfRel()
+            );
+
+            inventario.add(
+                    linkTo(
+                            methodOn(MovimientoInventarioController.class)
+                                    .listarPorInventario(inventario.getId())
+                    ).withRel("movimientos")
+            );
+        });
+
+        return ResponseEntity.ok(inventarios);
     }
 
-    
+    @Operation(summary = "Buscar inventario por ID")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Inventario encontrado"),
+                   @ApiResponse(responseCode = "404", description = "Inventario no encontrado")})
     @GetMapping("/{id}")
-    public InventarioResponseDTO obtener(@PathVariable Long id) {
+    public ResponseEntity<InventarioResponseDTO> obtener(@PathVariable Long id) {
 
-        return inventarioService.obtenerPorId(id);
+        InventarioResponseDTO inventario = inventarioService.obtenerPorId(id);
+
+        inventario.add(
+                linkTo(
+                        methodOn(InventarioController.class)
+                                .obtener(id)
+                ).withSelfRel()
+        );
+
+        inventario.add(
+                linkTo(
+                        methodOn(InventarioController.class)
+                                .listar()
+                ).withRel("inventarios")
+        );
+
+        inventario.add(
+                linkTo(
+                        methodOn(MovimientoInventarioController.class)
+                                .listarPorInventario(id)
+                ).withRel("movimientos")
+        );
+
+        return ResponseEntity.ok(inventario);
     }
 
-    
+    @Operation(summary = "Crear inventario")
+    @ApiResponses({@ApiResponse(responseCode = "201", description = "Inventario creado correctamente"),
+                   @ApiResponse(responseCode = "400", description = "Datos inválidos")})
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public InventarioResponseDTO crear(@Valid @RequestBody InventarioRequestDTO dto) {
+    public ResponseEntity<InventarioResponseDTO> crear(@Valid @RequestBody InventarioRequestDTO dto) {
 
-        return inventarioService.guardar(dto);
+        InventarioResponseDTO inventario = inventarioService.guardar(dto);
+        
+        inventario.add(
+                linkTo(
+                        methodOn(InventarioController.class)
+                                .obtener(inventario.getId())
+                ).withSelfRel()
+        );
+
+        inventario.add(
+                linkTo(
+                        methodOn(InventarioController.class)
+                                .listar()
+                ).withRel("inventarios")
+        );
+
+        inventario.add(
+                linkTo(
+                        methodOn(MovimientoInventarioController.class)
+                                .listarPorInventario(inventario.getId())
+                ).withRel("movimientos")
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(inventario);
     }
 
-    
+    @Operation(summary = "Actualizar inventario")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Inventario actualizado"),
+                   @ApiResponse(responseCode = "404", description = "Inventario no encontrado")})
     @PutMapping("/{id}")
-    public InventarioResponseDTO actualizar(@PathVariable Long id,@Valid @RequestBody InventarioRequestDTO dto) {
+    public ResponseEntity<InventarioResponseDTO> actualizar(@PathVariable Long id,@Valid @RequestBody InventarioRequestDTO dto) {
 
-        return inventarioService.actualizar(id, dto);
+        InventarioResponseDTO inventario = inventarioService.actualizar(id, dto);
+
+        inventario.add(
+                linkTo(
+                        methodOn(InventarioController.class)
+                                .obtener(inventario.getId())
+                ).withSelfRel()
+        );
+
+        inventario.add(
+                linkTo(
+                        methodOn(InventarioController.class)
+                                .listar()
+                ).withRel("inventarios")
+        );
+
+        inventario.add(
+                linkTo(
+                        methodOn(MovimientoInventarioController.class)
+                                .listarPorInventario(inventario.getId())
+                ).withRel("movimientos")
+        );
+
+        return ResponseEntity.ok(inventario);
     }
 
-   
+    @Operation(summary = "Eliminar inventario")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Inventario eliminado"),
+            @ApiResponse(responseCode = "404", description = "Inventario no encontrado")})
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
 
         inventarioService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 
-    
+    @Operation(summary = "Buscar inventario por ID de producto")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Inventario encontrado"),
+                   @ApiResponse(responseCode = "404", description = "Inventario no encontrado")})
     @GetMapping("/producto/{productoId}")
-    public InventarioResponseDTO buscarPorProductoId(@PathVariable Long productoId) {
+    public ResponseEntity<InventarioResponseDTO> buscarPorProductoId(@PathVariable Long productoId) {
 
-        return inventarioService.buscarPorProductoId(productoId);
+        InventarioResponseDTO inventario = inventarioService.buscarPorProductoId(productoId);
+
+        inventario.add(
+                linkTo(
+                        methodOn(InventarioController.class)
+                                .obtener(inventario.getId())
+                ).withSelfRel()
+        );
+
+        inventario.add(
+                linkTo(
+                        methodOn(InventarioController.class)
+                                .listar()
+                ).withRel("inventarios")
+        );
+
+        inventario.add(
+                linkTo(
+                        methodOn(MovimientoInventarioController.class)
+                                .listarPorInventario(inventario.getId())
+                ).withRel("movimientos")
+        );
+
+        return ResponseEntity.ok(inventario);
     }
 
+    @Operation(summary = "Descontar stock de un producto")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Stock descontado correctamente"),
+                   @ApiResponse(responseCode = "404", description = "Producto no encontrado")})
     @PutMapping("/descontar/{productoId}")
-        public void descontarStock(@PathVariable Long productoId,@RequestParam Integer cantidad) {
+    public ResponseEntity<Void> descontarStock(@PathVariable Long productoId,@RequestParam Integer cantidad) {
 
         inventarioService.descontarStock(productoId, cantidad);
+        return ResponseEntity.ok().build();
     }
-}
+
+    }
+

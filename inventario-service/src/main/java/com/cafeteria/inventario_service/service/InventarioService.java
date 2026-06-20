@@ -88,10 +88,30 @@ public class InventarioService {
         logger.info("Inventario creado correctamente con id {}",
                 guardado.getId());
 
+        MovimientoInventario movimiento = new MovimientoInventario();
+
+        movimiento.setInventario(guardado);
+
+        movimiento.setTipo("ENTRADA");
+
+        movimiento.setCantidad(guardado.getStock());
+
+        movimiento.setMotivo("Stock inicial");
+
+        movimientoRepository.save(movimiento);
+
+        logger.info("Movimiento inicial registrado para inventario {}",
+                guardado.getId());
+
+        logger.info("Inventario creado correctamente con id {}",
+                guardado.getId());
+
         return InventarioMapper.toResponse(guardado);
     }
 
+    @Transactional
     public InventarioResponseDTO actualizar(Long id,InventarioRequestDTO dto) {
+
 
         logger.info("Actualizando inventario con id {}", id);
 
@@ -107,14 +127,16 @@ public class InventarioService {
 
             productoClient.obtenerProducto(dto.getProductoId());
 
-            logger.info("Producto {} validado correctamente",dto.getProductoId());
+            logger.info("Producto {} validado correctamente", dto.getProductoId());
 
         } catch (Exception e) {
 
-            logger.error("Producto {} no existe",dto.getProductoId());
+            logger.error("Producto {} no existe", dto.getProductoId());
 
             throw new BusinessException("El producto no existe");
         }
+
+        Integer stockAnterior = inventario.getStock();
 
         inventario.setProductoId(dto.getProductoId());
 
@@ -122,12 +144,46 @@ public class InventarioService {
 
         inventario.setDisponible(dto.getStock() > 0);
 
+        inventario.setFechaActualizacion(LocalDateTime.now());
+
+        Integer diferencia = dto.getStock() - stockAnterior;
+
+        if (diferencia > 0) {
+
+            MovimientoInventario movimiento = new MovimientoInventario();
+
+            movimiento.setInventario(inventario);
+            movimiento.setTipo("ENTRADA");
+            movimiento.setCantidad(diferencia);
+            movimiento.setMotivo("Ajuste manual de inventario");
+
+            movimientoRepository.save(movimiento);
+
+            logger.info("Movimiento ENTRADA registrado por {} unidades", diferencia);
+        }
+
+        if (diferencia < 0) {
+
+            MovimientoInventario movimiento = new MovimientoInventario();
+
+            movimiento.setInventario(inventario);
+            movimiento.setTipo("SALIDA");
+            movimiento.setCantidad(Math.abs(diferencia));
+            movimiento.setMotivo("Ajuste manual de inventario");
+
+            movimientoRepository.save(movimiento);
+
+            logger.info("Movimiento SALIDA registrado por {} unidades",
+                    Math.abs(diferencia));
+        }
+
         Inventario actualizado = inventarioRepository.save(inventario);
 
         logger.info("Inventario {} actualizado correctamente", id);
 
         return InventarioMapper.toResponse(actualizado);
-    }
+
+        }
 
     public void eliminar(Long id) {
 
