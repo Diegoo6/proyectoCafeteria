@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 
 @Configuration
 @SecurityScheme(
@@ -21,7 +22,8 @@ public class Swagger {
         return new OpenAPI().info(new Info()
                                   .title("API Empleado")
                                   .version("1.0")
-                                  .description("Microservicio de Empleado"));
+                                  .description("Microservicio de Empleado"))
+                                  .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
     }
     
 }

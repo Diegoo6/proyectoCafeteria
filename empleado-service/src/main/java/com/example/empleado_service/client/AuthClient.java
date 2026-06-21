@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.example.empleado_service.dto.UsuarioResponse;
 
-@FeignClient(name = "autenticacion-service", url = "http://localhost:8081")
+@FeignClient(name = "autenticacion-service", url = "${auth.service.url}")
 public interface AuthClient {
 
     @GetMapping("/api/v1/autenticacion/usuarios/{id}")

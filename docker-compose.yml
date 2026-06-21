@@ -1,0 +1,23 @@
+services:
+  autenticacion-service:
+    image: autenticacion-service
+    container_name: autenticacion-service
+    ports:
+      - "8081:8081"
+    environment:
+      TNS_ADMIN: /opt/oracle/wallet
+    volumes:
+      - C:/oracle:/opt/oracle/wallet
+
+  empleado-service:
+    image: empleado-service
+    container_name: empleado-service
+    ports:
+      - "8082:8082"
+    environment:
+      TNS_ADMIN: /opt/oracle/wallet
+      AUTH_SERVICE_URL: http://autenticacion-service:8081
+    volumes:
+      - C:/oracle:/opt/oracle/wallet
+    depends_on:
+      - autenticacion-service
