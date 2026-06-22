@@ -1,0 +1,14 @@
+
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY target/producto-service-0.0.1-SNAPSHOT.jar app.jar
+
+COPY wallet /app/wallet
+
+ENV WALLET_PATH=/app/wallet
+
+EXPOSE 8083
+
+ENTRYPOINT ["java","-jar","app.jar"]
