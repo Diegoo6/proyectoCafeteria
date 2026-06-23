@@ -1,0 +1,139 @@
+package com.example.autenticacion_service.controller;
+
+import java.util.List;
+
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.autenticacion_service.dto.LoginRequest;
+import com.example.autenticacion_service.dto.LoginResponse;
+import com.example.autenticacion_service.dto.NuevoRolRequest;
+import com.example.autenticacion_service.dto.RegisterRequest;
+import com.example.autenticacion_service.dto.UsuarioResponse;
+import com.example.autenticacion_service.model.TipoRol;
+import com.example.autenticacion_service.service.AutenticacionService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+@Tag(name = "Autenticacion", description = "Operaciones relacionadas con autenticacion y gestion de usuarios")
+@RestController
+@Validated
+@RequestMapping("/api/v1/autenticacion")
+public class AutenticacionController {
+
+    private final AutenticacionService autenticacionService;
+
+    public AutenticacionController(AutenticacionService autenticacionService) {
+        this.autenticacionService = autenticacionService;
+    }
+
+    @Operation(summary = "Registrar usuario", description = "Crea un nuevo usuario con ROL: EMPLEADO")
+    @PostMapping("/registrar")
+    public ResponseEntity<UsuarioResponse> registrarUsuario(@Valid @RequestBody RegisterRequest request) {
+        UsuarioResponse usuarioRegistrado = autenticacionService.registrarUsuario(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRegistrado);
+    }
+
+    @Operation(summary = "Iniciar Sesion", description = "Autentica al usuario y retorna un TOKEN")
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> usuarioLogin(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(autenticacionService.usuarioLogin(request));
+    }
+    
+    @Operation(summary = "Buscar usuario por ID", description = "Obtiene datos de un usuario segun su ID")
+    @GetMapping("/usuarios/{id}")
+    public ResponseEntity<EntityModel<UsuarioResponse>> buscarPorId(@PathVariable("id") Long id) {
+
+        UsuarioResponse usuarioEncontrado = autenticacionService.buscarPorId(id);
+
+        EntityModel<UsuarioResponse> usuarioConLinks = EntityModel.of(usuarioEncontrado,
+                                                                      linkTo(methodOn(AutenticacionController.class)
+                                                                             .buscarPorId(id)).withSelfRel(),
+
+                                                                      linkTo(methodOn(AutenticacionController.class)
+                                                                             .listarUsuarios()).withRel("listar-todos-usuarios"),
+
+                                                                      linkTo(methodOn(AutenticacionController.class)
+                                                                             .cambiarRol(id, null))
+                                                                             .withRel("cambiar-rol"),
+
+                                                                      linkTo(methodOn(AutenticacionController.class)
+                                                                             .eliminarPorId(id))
+                                                                             .withRel("eliminar-usuario"));
+    
+        return ResponseEntity.ok(usuarioConLinks);
+    }
+
+    @Operation(summary = "Listar Usuarios", description = "Obtiene la lista completa de usuarios registrados")
+    @GetMapping("/usuarios")
+    public ResponseEntity<List<EntityModel<UsuarioResponse>>> listarUsuarios() {
+        List<UsuarioResponse> listaUsuarios = autenticacionService.listarUsuarios();
+
+        List<EntityModel<UsuarioResponse>> listaUsuariosConLink = listaUsuarios.stream()
+                                                                  .map(usuario -> EntityModel.of(usuario,
+                                                                   linkTo(methodOn(AutenticacionController.class)
+                                                                  .buscarPorId(usuario.getId())).withSelfRel(),
+                                                                  
+                                                                   linkTo(methodOn(AutenticacionController.class)
+                                                                  .cambiarRol(usuario.getId(), null))
+                                                                  .withRel("cambiar-rol"),
+
+                                                                   linkTo(methodOn(AutenticacionController.class)
+                                                                  .eliminarPorId(usuario.getId()))
+                                                                  .withRel("eliminar-usuario"))).toList();
+
+        return ResponseEntity.ok(listaUsuariosConLink);
+    }
+
+    @Operation(summary = "Filtrar usuarios por ROL", description = "Listar usuarios segun su ROL")
+    @GetMapping("/usuarios/rol")
+    public ResponseEntity<List<EntityModel<UsuarioResponse>>> filtrarPorRol(@RequestParam("rol") TipoRol rol) {
+        List<UsuarioResponse> listaRol = autenticacionService.listarPorRol(rol);
+
+        List<EntityModel<UsuarioResponse>> rolConLink = listaRol.stream()
+                                                        .map(usuario -> EntityModel.of(usuario,
+                                                        linkTo(methodOn(AutenticacionController.class)
+                                                        .buscarPorId(usuario.getId())).withSelfRel(),
+
+                                                        linkTo(methodOn(AutenticacionController.class)
+                                                        .cambiarRol(usuario.getId(), null)).withRel("cambiar-rol")
+                                                        )).toList();
+
+        return ResponseEntity.ok(rolConLink);
+    }
+    
+    @Operation(summary = "Cambiar ROL de usuario", description = "Actualiza el ROL de un usuario existente")
+    @PutMapping("/usuarios/{id}/cambiar-rol")
+    public ResponseEntity<UsuarioResponse> cambiarRol(@PathVariable("id") Long id,@Valid @RequestBody NuevoRolRequest request) {
+        UsuarioResponse usuario = autenticacionService.cambiarRol(id, request);
+        
+        return ResponseEntity.ok(usuario);
+    }
+
+    @Operation(summary = "Eliminar usuario", description = "Elimina un usuario segun su id")
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<Void> eliminarPorId(@PathVariable("id") Long id) {
+        autenticacionService.eliminarPorId(id);
+
+        return ResponseEntity.noContent().build();
+    }    
+    
+}
