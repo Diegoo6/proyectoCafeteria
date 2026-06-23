@@ -41,11 +41,17 @@ Cada microservicio incluye:
 Microservicios Implementados
 
        Servicio      |   Puerto   |              Función
+       
 Autenticación Service|    8081    | Gestión de usuarios y generación de JWT
+
 Empleado Service     |    8082    | Administración de empleados
+
 Producto Service     |    8083    | Gestión de productos y categorías
+
 Inventario Service   |    8084    | Gestión de stock y movimientos
+
 Venta Service        |    8085    | Registro de ventas
+
 Reporte Service      |    8086    | Generación de reportes
 
 ---
