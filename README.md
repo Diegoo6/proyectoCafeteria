@@ -40,13 +40,13 @@ Cada microservicio incluye:
 
 Microservicios Implementados
 
-Servicio     |   Puerto       | Función
-Autenticación Service| 8081| Gestión de usuarios y generación de JWT
-Empleado Service| 8082| Administración de empleados
-Producto Service| 8083| Gestión de productos y categorías
-Inventario Service| 8084| Gestión de stock y movimientos
-Venta Service| 8085| Registro de ventas
-Reporte Service| 8086| Generación de reportes
+       Servicio      |   Puerto   |              Función
+Autenticación Service|    8081    | Gestión de usuarios y generación de JWT
+Empleado Service     |    8082    | Administración de empleados
+Producto Service     |    8083    | Gestión de productos y categorías
+Inventario Service   |    8084    | Gestión de stock y movimientos
+Venta Service        |    8085    | Registro de ventas
+Reporte Service      |    8086    | Generación de reportes
 
 ---
 
@@ -67,7 +67,7 @@ Dependencias del sistema:
 
 ---
 
-🔐 Seguridad
+Seguridad
 
 La seguridad fue implementada mediante:
 
@@ -87,7 +87,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
 
 ---
 
-🗄 Persistencia
+Persistencia
 
 Base de datos utilizada:
 
@@ -104,7 +104,7 @@ Todos los microservicios utilizan una wallet compartida para conectarse a Oracle
 
 ---
 
-🐳 Docker y Docker Compose
+Docker y Docker Compose
 
 El sistema se encuentra completamente dockerizado.
 
@@ -125,7 +125,7 @@ docker compose down
 
 ---
 
-📂 Estructura del Proyecto
+Estructura del Proyecto
 
 ProyectoCafeteria
 │
@@ -140,7 +140,7 @@ ProyectoCafeteria
 
 ---
 
-📄 Documentación API
+Documentación API
 
 Todos los endpoints se encuentran documentados mediante Swagger/OpenAPI.
 
@@ -155,7 +155,7 @@ Accesos:
 
 ---
 
-🛠 Tecnologías Utilizadas
+Tecnologías Utilizadas
 
 - Java 21
 - Spring Boot
@@ -176,7 +176,7 @@ Accesos:
 
 ---
 
-✅ Características Implementadas
+Características Implementadas
 
 - Arquitectura basada en microservicios.
 - Comunicación entre servicios mediante OpenFeign.
@@ -190,7 +190,7 @@ Accesos:
 
 ---
 
-🎯 Conclusión
+Conclusión
 
 El proyecto permitió aplicar conceptos avanzados de arquitectura de microservicios mediante una solución distribuida compuesta por seis servicios independientes, integrados mediante OpenFeign, protegidos con JWT y desplegados utilizando Docker Compose.
 
