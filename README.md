@@ -3,211 +3,111 @@ Descripción
 
 El presente proyecto corresponde al desarrollo de un sistema de gestión para una cafetería utilizando arquitectura de microservicios.
 
-La solución permite administrar productos, categorías, inventario y movimientos de inventario mediante servicios independientes que se comunican a través de APIs REST.
+La solución permite administrar usuarios, empleados, productos, inventario, ventas y reportes mediante servicios independientes que se comunican a través de APIs REST utilizando OpenFeign.
 
-El objetivo principal es aplicar los conceptos de arquitectura de microservicios, separación de responsabilidades, comunicación entre servicios, seguridad, documentación y pruebas unitarias.
+El objetivo principal es aplicar conceptos de arquitectura distribuida, comunicación entre servicios, seguridad mediante JWT, persistencia en Oracle Database, contenerización con Docker y orquestación mediante Docker Compose.
 
 Integrantes
 Matías Posada
-Diego Cortes
-Ignacio Cortes
-
+Diego Cortés
+Ignacio Cortés
 Arquitectura Utilizada
 
-El sistema fue desarrollado utilizando una arquitectura basada en microservicios siguiendo el patrón:
+El sistema fue desarrollado siguiendo una arquitectura basada en microservicios utilizando el patrón:
 
 Controller → Service → Repository
 
-Cada microservicio posee:
+Cada microservicio incluye:
 
 Controladores REST
 Servicios con lógica de negocio
 Repositorios JPA
-DTOs para intercambio de información
-Mappers para conversión de entidades
-Manejo centralizado de excepciones
-Documentación Swagger
-Seguridad JWT
+DTOs
+OpenFeign
+Swagger/OpenAPI
+JWT
+Manejo de excepciones
+Docker
 Microservicios Implementados
-Producto Service
-
-Responsable de la gestión de productos y categorías.
-
-Funciones principales:
-
-Crear productos
-Listar productos
-Buscar productos por ID
-Actualizar productos
-Eliminar productos
-Crear categorías
-Listar categorías
-Buscar categorías por ID
-Actualizar categorías
-Eliminar categorías
-Buscar productos por categoría
-
-Puerto utilizado:
-
-8083
-
-Inventario Service
-
-Responsable de la administración del stock disponible.
-
-Funciones principales:
-
-Crear inventario
-Listar inventarios
-Buscar inventario por ID
-Actualizar inventario
-Eliminar inventario
-Buscar inventario por producto
-Descontar stock
-Registrar movimientos automáticamente
-
-Puerto utilizado:
-
-8084
-
-Movimiento de Inventario
-
-Componente perteneciente al Inventario Service.
-
-Funciones principales:
-
-Registrar entradas de stock
-Registrar salidas de stock
-Consultar movimientos
-Buscar movimientos por inventario
-Mantener historial de cambios de stock
+Servicio	Puerto	Función
+Autenticación Service	8081	Gestión de usuarios y generación de JWT
+Empleado Service	8082	Administración de empleados
+Producto Service	8083	Gestión de productos y categorías
+Inventario Service	8084	Gestión de stock y movimientos
+Venta Service	8085	Registro de ventas
+Reporte Service	8086	Generación de reportes
 Comunicación Entre Servicios
 
 La comunicación entre microservicios se implementó mediante OpenFeign.
 
-Inventario Service se comunica con Producto Service para validar la existencia de productos antes de crear registros de inventario.
+Dependencias del sistema:
 
-Esta integración permite mantener la consistencia de los datos y evitar registros inválidos.
-
+Empleado Service → Autenticación Service
+Inventario Service → Producto Service
+Venta Service → Empleado Service
+Venta Service → Producto Service
+Venta Service → Inventario Service
+Reporte Service → Venta Service
+Reporte Service → Empleado Service
+Reporte Service → Producto Service
 Seguridad
 
-La seguridad fue implementada utilizando:
+La seguridad fue implementada mediante:
 
 Spring Security
 JWT (JSON Web Token)
 
-Características implementadas:
+Características:
 
 Autenticación mediante token
 Protección de endpoints
 Validación de usuarios autenticados
-Documentación API
-
-Todos los endpoints se encuentran documentados utilizando Swagger OpenAPI.
-
-Acceso local:
-
-Producto Service:
-
-http://localhost:8083/swagger-ui.html
-
-Inventario Service:
-
-http://localhost:8084/swagger-ui.html
-
+Autorización mediante encabezado Bearer Token
 Persistencia
 
 Base de datos utilizada:
 
-Oracle Database
+Oracle Database Cloud
 
 Tecnologías utilizadas:
 
 Spring Data JPA
 Hibernate
 Oracle JDBC Driver
-HATEOAS
+Oracle Wallet
 
-Se implementó HATEOAS para enriquecer las respuestas REST mediante enlaces relacionados.
+Todos los microservicios utilizan una wallet compartida para conectarse a Oracle Cloud.
 
-Ejemplos:
+Docker y Docker Compose
 
-Producto:
+El sistema se encuentra completamente dockerizado.
 
-self
-categoria
+Cada microservicio posee:
 
-Categoría:
+Dockerfile propio
+Imagen Docker independiente
 
-self
-productos
+La integración completa se realiza mediante Docker Compose.
 
-Inventario:
+Para levantar el sistema:
 
-self
-movimientos
+docker compose up --build
 
-Movimiento:
+Para detenerlo:
 
-self
-inventario
-Validaciones de Negocio Implementadas
-Producto
-No permite precios menores o iguales a cero.
-No permite nombres vacíos.
-No permite productos duplicados.
-Verifica existencia de categoría.
-Categoría
-No permite categorías duplicadas.
-Inventario
-Verifica existencia del producto.
-No permite más de un inventario por producto.
-Actualiza disponibilidad automáticamente según stock.
-Registra movimientos automáticamente.
-Movimiento de Inventario
-Registra entradas de stock.
-Registra salidas de stock.
-Mantiene trazabilidad de cambios realizados.
-Manejo de Excepciones
+docker compose down
+Documentación API
 
-Se implementaron excepciones personalizadas para controlar errores de negocio y recursos inexistentes.
+Todos los endpoints se encuentran documentados mediante Swagger/OpenAPI.
 
-Excepciones utilizadas:
+Accesos:
 
-ResourceNotFoundException
-BusinessException
-Pruebas Unitarias
-
-Se desarrollaron pruebas unitarias utilizando:
-
-JUnit 5
-Mockito
-
-Servicios evaluados:
-
-Producto Service
-
-Casos de prueba:
-
-Obtener producto por ID.
-Crear producto correctamente.
-Lanzar excepción cuando la categoría no existe.
-Eliminar producto correctamente.
-Inventario Service
-
-Casos de prueba:
-
-Obtener inventario por ID.
-Crear inventario correctamente.
-Lanzar excepción cuando ya existe inventario para el producto.
-Descontar stock correctamente.
-
-Total de pruebas implementadas:
-
-8 pruebas unitarias.
-
-Todas las pruebas fueron ejecutadas exitosamente.
-
+http://localhost:8081/swagger-ui.html
+http://localhost:8082/swagger-ui.html
+http://localhost:8083/swagger-ui.html
+http://localhost:8084/swagger-ui.html
+http://localhost:8085/swagger-ui.html
+http://localhost:8086/swagger-ui.html
 Tecnologías Utilizadas
 Java 21
 Spring Boot
@@ -215,41 +115,18 @@ Spring Security
 Spring Data JPA
 OpenFeign
 Swagger OpenAPI
-HATEOAS
 JWT
 Oracle Database
+Docker
+Docker Compose
 Maven
 Lombok
 JUnit 5
 Mockito
 Git
 GitHub
-Ejecución del Proyecto
-Clonar repositorio
-git clone https://github.com/Diegoo6/proyectoCafeteria.git
-Configurar Base de Datos
-
-Configurar las credenciales de Oracle Database en los archivos de configuración correspondientes.
-
-Ejecutar Microservicios
-
-Desde la raíz de cada microservicio:
-
-mvn spring-boot:run
-
-o ejecutar la clase principal Application.
-
-Acceder a Swagger
-
-Producto Service:
-
-http://localhost:8083/swagger-ui.html
-
-Inventario Service:
-
-http://localhost:8084/swagger-ui.html
-
 Conclusión
 
-El proyecto permitió aplicar conceptos de arquitectura de microservicios, comunicación REST, seguridad con JWT, 
-persistencia con Oracle Database, documentación OpenAPI, pruebas unitarias y buenas prácticas de desarrollo utilizando el ecosistema Spring Boot.
+El proyecto permitió aplicar conceptos avanzados de arquitectura de microservicios mediante una solución distribuida compuesta por seis servicios independientes, integrados mediante OpenFeign, protegidos con JWT y desplegados utilizando Docker Compose.
+
+La implementación permitió adquirir experiencia práctica en desarrollo backend, integración de servicios, seguridad, persistencia en Oracle Database y despliegue de aplicaciones contenerizadas.
