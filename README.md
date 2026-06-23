@@ -133,16 +133,10 @@ docker compose down
 
 Estructura del Proyecto
 
-ProyectoCafeteria
-│
-├── autenticacion-service
-├── empleado-service
-├── producto-service
-├── inventario-service
-├── venta-service
-├── reporte-service
-├── wallet
-└── docker-compose.yml
+
+<img width="198" height="255" alt="image" src="https://github.com/user-attachments/assets/d3be94ec-1a54-4f40-a955-81447019228b" />
+
+
 
 ---
 
